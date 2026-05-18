@@ -1,0 +1,359 @@
+{
+  "lumen-capital": {
+    "slug": "lumen-capital",
+    "id": "01",
+    "client": "Lumen Capital",
+    "scope": "Brand · Website · CMS",
+    "year": "2026",
+    "role": "Design & Build",
+    "tint": "#dcd6c8",
+    "color": "#1a1a1a",
+    "desc": "A reserved identity and editorial site for a thesis-driven investment firm.",
+    "problem": "Lumen had spent two years quietly compounding returns on a thesis few funds were running. Their website was a placeholder put up the day they incorporated. Every introduction from a friend ended with the same line: \"Don’t look at the site.\" It was the first thing every founder they wanted to back saw.",
+    "approach": [
+      "We started with a week of reading — every memo Lumen had written, every Q′ly letter to LPs, the books on Mira’s shelf. The voice was already there; the site just needed to honour it.",
+      "Identity is a quiet sans wordmark and a single editorial mark — the ‘L’ set to do the work of a logo and a footer ornament both. Type is Tiempos Headline paired with Söhne. No icons. No diagrams.",
+      "The site is one long scroll: thesis, portfolio, team, contact. Type carries the argument. Numbers are deliberately understated — what looks like restraint reads as confidence."
+    ],
+    "outcome": [
+      {
+        "k": "Inbound founder intros (90 days)",
+        "v": "× 3.4"
+      },
+      {
+        "k": "Pitch-meeting close rate",
+        "v": "+ 22 pts"
+      },
+      {
+        "k": "LP report open-rate (same look)",
+        "v": "78 %"
+      },
+      {
+        "k": "Page weight (HTML, first paint)",
+        "v": "23 KB"
+      }
+    ],
+    "timeline": "Jan → Apr 2026 · 14 weeks",
+    "stack": [
+      "Sanity (CMS)",
+      "Next.js",
+      "Vercel",
+      "Plausible"
+    ],
+    "spreads": [
+      "Wordmark studies — 47 directions narrowed to 3",
+      "Homepage hero, in-situ, on a 13″ MacBook",
+      "Thesis spread — type-driven argument, no illustrations",
+      "Portfolio company grid — every logo at the same x-height",
+      "Mobile case-study reader — single column",
+      "LP report template — Figma file shipped alongside"
+    ],
+    "quote": {
+      "text": "We weren’t looking for a ‘designer.’ We were looking for someone to make us look like ourselves. David did that in fourteen weeks and made me feel embarrassed I hadn’t commissioned it sooner.",
+      "by": "Mira Halevy",
+      "role": "Co-founder, Lumen Capital"
+    },
+    "rework": "I’d push back harder on the team-bio length. We ended up with paragraphs longer than the thesis page itself — vanity sneaking in at the last mile.",
+    "imageUrl": "https://almoalem.studio/images/lumen-capital-hero.png",
+    "spreadImages": [],
+    "ogImageUrl": "https://almoalem.studio/images/lumen-capital-og.png",
+    "seoDescription": "Brand identity and editorial website for Lumen Capital — a thesis-driven investment firm. Reserved typographic system, custom CMS, single voice.",
+    "ogImageAlt": "Lumen Capital — Brand & Website by David Almoalem"
+  },
+  "tessera-studio": {
+    "slug": "tessera-studio",
+    "id": "02",
+    "client": "Tessera Studio",
+    "scope": "Identity · Webflow",
+    "year": "2025",
+    "role": "Design Direction",
+    "tint": "#e8e2d4",
+    "color": "#3a322a",
+    "desc": "Visual system and site for an architectural practice in Athens.",
+    "problem": "Tessera had been working out of Athens for nine years with a Wordpress site they couldn’t change without calling their nephew. A 2025 win at the Mies prize meant the inbound went vertical — and the site stayed in 2017.",
+    "approach": [
+      "Three weeks in Athens. We worked from the studio, sat in their pin-ups, photographed every project they’d ever shipped on a Mamiya 7.",
+      "The site is built around the photography — monochrome plates that take up the full screen, captions in a 11pt mono, never on the image.",
+      "No ‘Projects’ tab. The work IS the navigation. You scroll vertically and you’re in the next project. Each one carries its year as the only chrome."
+    ],
+    "outcome": [
+      {
+        "k": "Avg. session duration",
+        "v": "4 m 32 s"
+      },
+      {
+        "k": "Mobile bounce",
+        "v": "− 41 %"
+      },
+      {
+        "k": "Inbound brief volume",
+        "v": "× 2.6"
+      },
+      {
+        "k": "Pages requiring CMS edits/yr",
+        "v": "12 (down from 60)"
+      }
+    ],
+    "timeline": "Mar → Jul 2025 · 16 weeks",
+    "stack": [
+      "Webflow",
+      "Editor X",
+      "Mamiya 7 + Portra 400"
+    ],
+    "spreads": [
+      "Identity — a single wordmark, two weights",
+      "Photography direction — black-and-white, single-source light",
+      "Homepage as project gallery, vertically scrolled",
+      "Project detail — captions never overlay images",
+      "Practice page — a single paragraph, hand-typeset"
+    ],
+    "quote": {
+      "text": "He folded into our practice for six months and made everything around him quieter and more confident. The work is genuinely beautiful — and our nephew can still edit it.",
+      "by": "Petros Vasiliou",
+      "role": "Director, Tessera Studio"
+    },
+    "rework": "The Greek typography on the about-page wants more love. Greek small-caps are their own problem and we shipped without fully solving it.",
+    "imageUrl": "https://almoalem.studio/images/tessera-studio-hero.png",
+    "spreadImages": [],
+    "ogImageUrl": "https://almoalem.studio/images/tessera-studio-og.png",
+    "seoDescription": "Visual system and Webflow site for Tessera Studio — an architectural practice in Athens. Quiet wordmark, modular grid, slow editorial rhythm.",
+    "ogImageAlt": "Tessera Studio — Identity & Webflow by David Almoalem"
+  },
+  "halcyon-museum": {
+    "slug": "halcyon-museum",
+    "id": "03",
+    "client": "Halcyon Museum",
+    "scope": "Exhibition site · React",
+    "year": "2025",
+    "role": "Lead Designer",
+    "tint": "#d4d8d0",
+    "color": "#1c2520",
+    "desc": "A scrollable exhibition for the museum's spring archive opening.",
+    "problem": "Halcyon wanted to put a 12-month exhibition online. Not as a marketing site — as a serious scrollable exhibition that could outlive the in-person show.",
+    "approach": [
+      "Curatorial collaboration from week one. The chief curator and I co-edited the scroll like a magazine spread.",
+      "Each room of the exhibition is a section. Within each section, you scroll laterally through the works. Captions, provenance, conservation notes all hang together at the same y-position.",
+      "Built with WebGL for the cover gestures — a slow pan over a high-res scan, parallax depth from a single image. Falls back gracefully on lower devices."
+    ],
+    "outcome": [
+      {
+        "k": "Unique visitors (first 60 days)",
+        "v": "184 k"
+      },
+      {
+        "k": "Avg. completion (full scroll)",
+        "v": "62 %"
+      },
+      {
+        "k": "Press hits (incl. FWA, Awwwards)",
+        "v": "11"
+      },
+      {
+        "k": "Exhibition catalogue sales",
+        "v": "+ 38 %"
+      }
+    ],
+    "timeline": "Sep → Dec 2024 · 14 weeks",
+    "stack": [
+      "React",
+      "Next.js",
+      "Sanity",
+      "Three.js"
+    ],
+    "spreads": [
+      "Cover — WebGL parallax over a 1.2 GB scan",
+      "Room I — horizontal scroll, vertical captions",
+      "Conservation notes — inline footnote system",
+      "Audio guide — transcripts as scrollable annotations",
+      "About the curator — a single-column letter"
+    ],
+    "quote": {
+      "text": "Working with David made the exhibition feel like a print magazine that happened to live in a browser. That sounds simple. It is not.",
+      "by": "Petra Wallenberg",
+      "role": "Chief Curator, Halcyon Museum"
+    },
+    "rework": "Audio guide controls should have been simpler. We over-engineered a transport that 80% of visitors never used.",
+    "imageUrl": "https://almoalem.studio/images/halcyon-museum-hero.png",
+    "spreadImages": [],
+    "ogImageUrl": "https://almoalem.studio/images/halcyon-museum-og.png",
+    "seoDescription": "A scrollable React exhibition for Halcyon Museum's spring archive opening. Considered motion, archival type, accessible across reading levels.",
+    "ogImageAlt": "Halcyon Museum — Exhibition site by David Almoalem"
+  },
+  "object-and-form": {
+    "slug": "object-and-form",
+    "id": "04",
+    "client": "Object & Form",
+    "scope": "E-commerce · Shopify",
+    "year": "2024",
+    "role": "Design & Build",
+    "tint": "#e3dcce",
+    "color": "#241f1a",
+    "desc": "Editorial commerce for a small-batch homeware brand.",
+    "problem": "Yael had built Object & Form on Instagram — small batches, sold out within the hour. She wanted a real shop without losing the ‘email a friend a photograph’ feel.",
+    "approach": [
+      "Shopify, used unapologetically as a CMS — not a store. The cart lives in a small drawer; the rest of the site is editorial.",
+      "Every product has a long-form essay attached: the maker, the kiln, the misfires, the names. You buy a story.",
+      "Restock notifications by SMS — short, like Yael writing to you herself."
+    ],
+    "outcome": [
+      {
+        "k": "Conversion (visit → sale)",
+        "v": "9.4 %"
+      },
+      {
+        "k": "Avg. order value",
+        "v": "+ 41 %"
+      },
+      {
+        "k": "SMS opt-in (first session)",
+        "v": "31 %"
+      },
+      {
+        "k": "Sellouts per drop",
+        "v": "5/6"
+      }
+    ],
+    "timeline": "May → Aug 2024 · 14 weeks",
+    "stack": [
+      "Shopify",
+      "Hydrogen",
+      "Postscript (SMS)"
+    ],
+    "spreads": [
+      "Wordmark — a wide serif, one weight",
+      "Product page — essay above the buy button",
+      "Drop page — single hero, restock SMS embedded",
+      "Maker bios — photographed at the kiln"
+    ],
+    "quote": {
+      "text": "I’ve worked with three studios in Tel Aviv. David is the only one who gave me the unglamorous answers I needed — and then designed something better than the glamorous ones promised.",
+      "by": "Yael Ronen",
+      "role": "Founder, Object & Form"
+    },
+    "rework": "Wishlist was a feature creep we both regretted. Should have shipped without it; sales would not have been worse.",
+    "imageUrl": "https://almoalem.studio/images/object-and-form-hero.png",
+    "spreadImages": [],
+    "ogImageUrl": "https://almoalem.studio/images/object-and-form-og.png",
+    "seoDescription": "Editorial commerce on Shopify for Object & Form — a small-batch homeware brand. Wordmark, lookbook system, product storytelling that converts.",
+    "ogImageAlt": "Object & Form — E-commerce by David Almoalem"
+  },
+  "northbound": {
+    "slug": "northbound",
+    "id": "05",
+    "client": "Northbound",
+    "scope": "SaaS marketing site",
+    "year": "2024",
+    "role": "Design & Build",
+    "tint": "#d6dadd",
+    "color": "#15191c",
+    "desc": "Repositioning and website for a logistics platform raising Series B.",
+    "problem": "Northbound was raising Series B with a 2018 site they’d outgrown four times over. Their pitch deck was beautiful. Their site looked like the company they used to be.",
+    "approach": [
+      "Repositioning first, design second. Three days of interviews with sales reps and customer success — the friction was in the language, not the layout.",
+      "Built a long marketing site with a clear hierarchy: who, what for whom, how it works, why now, what it costs.",
+      "Each ‘how it works’ step is a scroll-locked diagram — plain SVG, no Lottie, no video."
+    ],
+    "outcome": [
+      {
+        "k": "Inbound demo requests",
+        "v": "× 2.8"
+      },
+      {
+        "k": "Series B closed (Aug 2024)",
+        "v": "$ 38 M"
+      },
+      {
+        "k": "Sales-cycle length",
+        "v": "− 18 days"
+      },
+      {
+        "k": "Lighthouse (perf, all categories)",
+        "v": "A+"
+      }
+    ],
+    "timeline": "Apr → Jul 2024 · 14 weeks",
+    "stack": [
+      "Next.js",
+      "Sanity",
+      "Vercel",
+      "Plausible"
+    ],
+    "spreads": [
+      "Wordmark refresh — same monogram, new wordmark",
+      "Homepage — the new positioning, in two sentences",
+      "How-it-works — 4 scroll-locked SVG diagrams",
+      "Pricing page — honest, three tiers, no ‘contact us’",
+      "Customer stories — short, with named numbers"
+    ],
+    "quote": {
+      "text": "We raised in the room the deck had set up — but the site is what kept the call going past the first awkward minute.",
+      "by": "Aviv Tal",
+      "role": "COO, Northbound"
+    },
+    "rework": "I should have insisted on photography. The illustrative placeholders we used became permanent and the site lost an opportunity to feel human.",
+    "imageUrl": "https://almoalem.studio/images/northbound-hero.png",
+    "spreadImages": [],
+    "ogImageUrl": "https://almoalem.studio/images/northbound-og.png",
+    "seoDescription": "Repositioning and marketing site for Northbound — a logistics platform raising Series B. Diagrams that explain, pricing that doesn't hide.",
+    "ogImageAlt": "Northbound — SaaS site by David Almoalem"
+  },
+  "atelier-cote": {
+    "slug": "atelier-cote",
+    "id": "06",
+    "client": "Atelier Côte",
+    "scope": "Brand · Print · Web",
+    "year": "2023",
+    "role": "Brand Lead",
+    "tint": "#e0d6c6",
+    "color": "#231c18",
+    "desc": "From wordmark to wayfinding for a coastal hospitality group.",
+    "problem": "Atelier Côte was opening their second property on a stretch of coast nobody had heard of. They needed a brand that could carry from a hand-painted lobby sign to a 13′′ booking confirmation email.",
+    "approach": [
+      "Started with the sign painter. The wordmark was hand-lettered first, then digitised, never the other way around.",
+      "Print first — menus, key-cards, way-finding, the bottle for the in-room oil. The site was the last thing we made and it shows.",
+      "Site is a single page — photography of the property, two paragraphs, a booking widget. Nothing else."
+    ],
+    "outcome": [
+      {
+        "k": "Direct bookings (vs Booking.com)",
+        "v": "61 %"
+      },
+      {
+        "k": "Avg. nightly rate",
+        "v": "+ € 84"
+      },
+      {
+        "k": "Press features (FT Lex, Condé, NYT 36hrs)",
+        "v": "9"
+      },
+      {
+        "k": "Repeat-guest rate (Y1)",
+        "v": "34 %"
+      }
+    ],
+    "timeline": "Jan → Jun 2023 · 22 weeks",
+    "stack": [
+      "Hand-lettering",
+      "Tiempos Headline",
+      "Webflow"
+    ],
+    "spreads": [
+      "Wordmark — hand-painted, then digitised",
+      "Way-finding — signage at the property",
+      "Stationery — letterhead, key-card, oil bottle",
+      "Site — single page, four photographs",
+      "Email — confirmation, with the wordmark"
+    ],
+    "quote": {
+      "text": "We sold out the first season before the second wave of press even ran. David made an identity that earned us trust before guests had set foot on the path.",
+      "by": "Camille Aubry",
+      "role": "Co-founder, Atelier Côte"
+    },
+    "rework": "We left the website too thin. A second ‘Stay’ page would have caught the long-form-readers we kept losing to the inbox.",
+    "imageUrl": "https://almoalem.studio/images/atelier-cote-hero.png",
+    "spreadImages": [],
+    "ogImageUrl": "https://almoalem.studio/images/atelier-cote-og.png",
+    "seoDescription": "Hand-lettered wordmark to web for Atelier Côte — a coastal hospitality group. Sign painting, stationery, single-page booking site that prints.",
+    "ogImageAlt": "Atelier Côte — Brand & Print by David Almoalem"
+  }
+}

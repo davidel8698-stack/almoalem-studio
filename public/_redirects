@@ -1,0 +1,14 @@
+# Cloudflare Pages / Netlify-compatible redirect rules.
+# Copied verbatim into dist/ by build/build.mjs Phase 0.
+
+# --- Apex / www normalization (Cloudflare handles this at DNS; safety net) ---
+# Cloudflare Pages auto-redirects www → apex when both are connected; no
+# explicit rule needed here.
+
+# --- Trailing-slash normalization (canonical URLs all have trailing /) ---
+/work/:slug   /work/:slug/   301
+/he/work/:slug   /he/work/:slug/   301
+/journal/:slug   /journal/:slug/   301
+
+# --- Catch-all 404 fallback (Cloudflare also auto-serves /404.html) ---
+/*   /404.html   404

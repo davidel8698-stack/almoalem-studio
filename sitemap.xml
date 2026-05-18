@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sitemap.xml — almoalem.studio
+  Home pair (EN + HE) + 6 project pages (EN + HE hreflang siblings)
+  + journal landing + per-article URLs. image:image blocks reference
+  per-project hero photos when they exist on disk, otherwise fall back
+  to the homepage OG card so Google never sees a dangling 404.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://almoalem.studio/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>David Almoalem — Independent Designer &amp; Developer</image:title>
+      <image:caption>Considered websites and brand systems for founders, studios and museums. Tel Aviv.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/he/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>דוד אלמועלם — מעצב ומפתח עצמאי</image:title>
+      <image:caption>אתרים מדודים ומערכות מותג לפאונדרים, סטודיואים ומוזיאונים. תל אביב.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/work/lumen-capital/</loc>
+    <lastmod>2026-12-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/work/lumen-capital/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/work/lumen-capital/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/work/lumen-capital/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>Lumen Capital — Brand · Website · CMS</image:title>
+      <image:caption>A reserved identity and editorial site for a thesis-driven investment firm.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/work/tessera-studio/</loc>
+    <lastmod>2025-12-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/work/tessera-studio/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/work/tessera-studio/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/work/tessera-studio/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>Tessera Studio — Identity · Webflow</image:title>
+      <image:caption>Visual system and site for an architectural practice in Athens.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/work/halcyon-museum/</loc>
+    <lastmod>2025-12-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/work/halcyon-museum/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/work/halcyon-museum/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/work/halcyon-museum/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>Halcyon Museum — Exhibition site · React</image:title>
+      <image:caption>A scrollable exhibition for the museum&apos;s spring archive opening.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/work/object-and-form/</loc>
+    <lastmod>2024-12-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/work/object-and-form/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/work/object-and-form/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/work/object-and-form/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>Object &amp; Form — E-commerce · Shopify</image:title>
+      <image:caption>Editorial commerce for a small-batch homeware brand.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/work/northbound/</loc>
+    <lastmod>2024-12-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/work/northbound/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/work/northbound/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/work/northbound/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>Northbound — SaaS marketing site</image:title>
+      <image:caption>Repositioning and website for a logistics platform raising Series B.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/work/atelier-cote/</loc>
+    <lastmod>2023-12-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/work/atelier-cote/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/work/atelier-cote/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/work/atelier-cote/"/>
+    <image:image>
+      <image:loc>https://almoalem.studio/og.png</image:loc>
+      <image:title>Atelier Côte — Brand · Print · Web</image:title>
+      <image:caption>From wordmark to wayfinding for a coastal hospitality group.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/journal/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://almoalem.studio/journal/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://almoalem.studio/he/journal/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://almoalem.studio/journal/"/>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/journal/on-working-slowly-on-purpose/</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/journal/the-case-for-boring-portfolios/</loc>
+    <lastmod>2026-02-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/journal/notes-from-a-year-of-solo-client-work/</loc>
+    <lastmod>2025-12-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://almoalem.studio/journal/why-i-left-the-agency/</loc>
+    <lastmod>2025-10-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

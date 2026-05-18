@@ -1,0 +1,17 @@
+{
+  "name": "David Almoalem",
+  "short_name": "Almoalem",
+  "description": "Independent designer and developer in Tel Aviv.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f0ebde",
+  "theme_color": "#0c0c09",
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/favicon.png", "type": "image/png", "sizes": "32x32" },
+    { "src": "/apple-touch-icon.png", "type": "image/png", "sizes": "180x180" }
+  ]
+}

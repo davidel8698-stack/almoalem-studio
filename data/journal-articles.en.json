@@ -1,0 +1,70 @@
+{
+  "on-working-slowly-on-purpose": {
+    "eyebrow": "No. 12",
+    "title": "On working slowly, on purpose.",
+    "subtitle": "Why every fast site I make starts with three weeks of nothing being built.",
+    "date": "2026-04-08",
+    "readMin": 6,
+    "paragraphs": [
+      "There's a moment, four or five days into a new project, where I haven't opened Figma yet, haven't touched the codebase, and the founder is starting to wonder whether they hired the wrong person. I usually tell them the truth: I am working. I'm just not making anything yet.",
+      "Most of the design work I've ever regretted was made in the first week. Not because the craft was bad — I knew how to draw the thing — but because I drew it before I understood the thing. The week I spent rendering the homepage was a week I should have spent on the phone with three of their customers, or reading the deck they sent to investors, or rewriting the positioning sentence until I could say it back without looking at the page.",
+      "Slow is a posture, not a pace. The hours add up the same way; I just spend them earlier on questions and later on pixels. The output is shorter — one homepage instead of three concepts — but it's the homepage we actually ship, and we ship it once.",
+      "I think about a sentence Petros from Tessera said: the building is the last thing the architect draws. Everything before that is reading the site. I try to read the site.",
+      "What this looks like in practice: the first deliverable is usually a written document. Not a moodboard, not a wireframe — a paragraph of what the company is, three sentences of what the site should make a visitor feel, and a list of things we have explicitly decided not to do. The list of nos is the most useful part. Without it I'd spend the next twelve weeks reopening every decision.",
+      "There's a version of this work that's flashier. Big concept slides, three directions, a 30-minute presentation on \"the visual language\". I used to make that work, when I was at the agency. Looking back, the slides were mostly a way of staying busy while I figured out what I actually thought. I don't need them anymore. I just need the time."
+    ]
+  },
+  "the-case-for-boring-portfolios": {
+    "eyebrow": "No. 11",
+    "title": "The case for boring portfolios.",
+    "subtitle": "Most of the best designers I know don't have one. The ones who do, theirs is a list.",
+    "date": "2026-02-16",
+    "readMin": 4,
+    "paragraphs": [
+      "Show me a designer with a beautiful portfolio site and I'll show you a designer who hasn't shipped much recently. This is unfair and I'll defend it.",
+      "A portfolio is an asset that compounds slowly and breaks easily. Every six months it looks dated, every year a project quietly gets removed because the company pivoted or the screenshot rotted, and the only people who reach it are other designers, looking for ideas to remix. Real clients arrive by referral, and they read your About page once.",
+      "The portfolios I respect most are deliberately plain — a long list of projects, with a sentence each, in chronological order. Reverse-chrono if they're optimistic about the present. Most of them are not on a dot-com. They're a page on Read.cv or a PDF emailed when asked. The designers are too busy making the thing to spend three weeks making the page about the thing.",
+      "I broke my own rule with this site. The reason was specific: I wanted a vehicle for ideas, not just projects. The journal is the point. The work pages are the proof. The brand system is the studio. If the site looked like a list, none of those would land.",
+      "But I notice that the page I redesign most often is this one. The work pages I haven't touched in eighteen months — those are fine. The page I'd actually replace tomorrow, if there were a faster way, is the front door."
+    ]
+  },
+  "notes-from-a-year-of-solo-client-work": {
+    "eyebrow": "No. 10",
+    "title": "Notes from a year of solo client work.",
+    "subtitle": "Twelve things I learned the hard way, sorted by how much they hurt.",
+    "date": "2025-12-20",
+    "readMin": 9,
+    "paragraphs": [
+      "I went independent at the start of 2025 with a savings runway of nine months and an internal monologue that mostly said are you sure. A year and seven projects later: the runway turned into a buffer, the monologue went quiet around month four, and I learned twelve things, sorted here roughly by how painful the lesson was.",
+      "1. Pricing is a positioning act, not a math problem. Every time I tried to calculate a project cost from hours, I underbid by 30%. Every time I pitched a flat number based on what the work was worth to the company, I won the deal and the client was happier. The hours-based estimate signals that I'm a contractor. The value-based number signals that I'm a partner. Clients pay partners more, and treat them better, and ship faster.",
+      "2. Discovery is the project. I bill discovery as a separate, paid first phase. It takes a week. If the discovery doesn't lead anywhere we end there and both walk away with their answer. Three of seven projects this year started this way. All three converted. Two of seven didn't, and one of those was the biggest project I lost — because I gave free discovery for two months before they decided to hire their cousin.",
+      "3. The proposal does most of the selling. A two-page written proposal with scope, schedule, and a single number, sent within 48 hours of the first call, outperforms every studio pitch deck I've ever made. It's a forcing function: if I can't write the proposal cleanly, I haven't understood the project.",
+      "4. Aftercare is the contract clause that wins next year's projects. I built a month of attentive support into every engagement. Free, structured, with weekly check-ins. Half my 2026 pipeline came from that month.",
+      "5. Saying no is a learnable skill. I said no to four projects this year. Three of them came back six months later with a better fit. The fourth went to a friend who needed the work. None of them resented me; one referred two others.",
+      "6. Don't have a rate card. List ranges if pressed, but always price the engagement, not the work. \"From $35k\" is more honest than \"$200/hour\".",
+      "7. The week before launch is the week where everything you forgot becomes visible. Build a launch checklist. Mine has 47 items. The last project went out clean.",
+      "8. Photography is a department, not an afterthought. Two of my regrets this year are projects where I let the team supply photography. They both shipped looking 30% less considered than the rest of the system.",
+      "9. Founders want their boss to read the site, and their boss doesn't care about the typography. Design for the reader, not the founder's perception of the reader.",
+      "10. The studio name doesn't matter. Use your own name. It scales down well to email signatures and up well to invoices.",
+      "11. Track your time, but don't bill it. Tracking shows you which kinds of work you under-estimate. Billing time turns clients into bookkeepers.",
+      "12. Quarterly, do one project that nobody pays for. The journal is mine. Without it I wouldn't have written the other eleven of these.",
+      "Year two starts in three months. The plan is fewer projects, longer engagements, no marketing site for me. Just the page about the work, the page about the writing, and one number on the email signature."
+    ]
+  },
+  "why-i-left-the-agency": {
+    "eyebrow": "No. 09",
+    "title": "Why I left the agency.",
+    "subtitle": "Three years of meetings, ten months of design, and a slow leak that became a decision.",
+    "date": "2025-10-12",
+    "readMin": 7,
+    "paragraphs": [
+      "I worked at a thirty-person studio in Tel Aviv for three years. By the end I was a design lead, and by the end of that I was running point on four projects at once, which is a polite way of saying I was running point on zero.",
+      "The work was good. The studio was good — owners I respected, clients I'd defend, a culture that took craft seriously without making it precious. The thing that wore me down wasn't the studio. It was the geometry of being a designer at scale.",
+      "Every project at a studio passes through three filters between the founder's idea and your hands: the new business call, the strategy debrief, the kick-off. By the time the work reaches you, you have a brief, a budget, and a tone someone else set. You make the work, but you don't make the project.",
+      "I missed making the project. Most of the work I was proudest of, from my freelance years before the studio, came from a single sentence on a call that I then spent twelve weeks turning into the answer. The studio version of that conversation is twenty pages of brief and a strategy team who's already written down what the answer should feel like.",
+      "There's a counter-argument I want to honor: scale lets you do work you couldn't alone. The museum project I led at the studio used a copywriter, a 3D motion artist, and a brand strategist I'd never have hired solo. The output was richer for it. I am not pretending that going independent makes the work bigger.",
+      "But I think a designer's career, like a chef's, eventually demands a smaller kitchen. The first decade is about getting good. The second is about getting good at picking what to cook. The agency was an extraordinary kitchen, with the best ingredients in the country. I just couldn't pick the menu.",
+      "It's been ten months. The work is harder; there are weeks I sleep less than I used to. But I haven't made a single thing I didn't want to make. That is the only metric I'm tracking this year."
+    ]
+  }
+}

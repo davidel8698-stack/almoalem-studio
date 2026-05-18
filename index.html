@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>David Almoalem — Three Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg: #f0eee9;
+  --ink: #0a0a0a;
+  --ink-2: rgba(10,10,10,0.6);
+  --hair: rgba(10,10,10,0.14);
+  --serif: "Instrument Serif", serif;
+  --sans: "Geist", system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, monospace;
+}
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+body { font: 400 14px/1.5 var(--sans); }
+* { box-sizing: border-box; }
+
+iframe.dir-iframe {
+  width: 1440px;
+  height: 900px;
+  border: 0;
+  display: block;
+  background: var(--bg);
+}
+
+/* artboard caption rows below each iframe */
+.dir-card {
+  width: 1440px;
+  background: #fff;
+  border: 1px solid var(--hair);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.dir-card .head {
+  padding: 22px 32px;
+  border-bottom: 1px solid var(--hair);
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: end;
+}
+.dir-card .head .num { font: 500 11px/1 var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.08em; }
+.dir-card .head .name { font: 400 38px/1 var(--serif); letter-spacing: -0.01em; }
+.dir-card .head .name em { font-style: italic; color: var(--ink-2); }
+.dir-card .head .kv { font: 500 11px/1.4 var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.dir-card .head .kv b { color: var(--ink); font-weight: 500; display: block; margin-top: 4px; font-family: var(--sans); font-size: 13px; letter-spacing: 0; text-transform: none; }
+.dir-card .open-link {
+  position: absolute;
+  top: 22px; right: 32px;
+  font: 500 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 8px 14px;
+  background: var(--ink); color: #f5f1e6;
+  text-decoration: none;
+  z-index: 2;
+}
+.dir-card .head { position: relative; }
+
+/* welcome card at top */
+.welcome {
+  padding: 48px;
+  background: var(--bg);
+  border: 1px solid var(--hair);
+  width: 1440px;
+}
+.welcome .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 48px; align-items: end; }
+.welcome h1 { margin: 0; font: 400 72px/0.95 var(--serif); letter-spacing: -0.02em; }
+.welcome h1 em { font-style: italic; color: var(--ink-2); }
+.welcome .lede { font: 400 18px/1.5 var(--sans); color: var(--ink); max-width: 40ch; }
+.welcome .meta { font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); }
+.welcome .meta b { color: var(--ink); font-weight: 500; font-family: var(--sans); display: block; font-size: 13px; letter-spacing: 0; text-transform: none; margin-top: 4px; }
+
+/* placeholder fallback if iframe blocked */
+.iframe-fallback {
+  width: 1440px; height: 900px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.08));
+  color: var(--ink-2);
+  font: 500 12px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.08em;
+}
+</style>
+</head>
+<body>
+
+<div id="canvas-root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel">
+const { useEffect, useRef, useState } = React;
+
+function Iframe({ src }) {
+  const ref = useRef();
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div style={{position:'relative', width:1440, height:900}}>
+      {!loaded && (
+        <div className="iframe-fallback" style={{position:'absolute', inset:0}}>
+          Loading prototype…
+        </div>
+      )}
+      <iframe
+        ref={ref}
+        className="dir-iframe"
+        src={src}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
+function DirHeader({ no, name, sub, info1, info2, info3, href }) {
+  return (
+    <div className="head">
+      <div>
+        <div className="num">{no}</div>
+        <div className="name" style={{marginTop:8}}>{name} <em>— {sub}</em></div>
+      </div>
+      <div className="kv">Type system<b>{info1}</b></div>
+      <div className="kv">Voice<b>{info2}</b></div>
+      <div className="kv">Mood<b>{info3}</b></div>
+      <a className="open-link" href={href} target="_blank" rel="noopener">Open prototype ↗</a>
+    </div>
+  );
+}
+
+function Card({ children }) {
+  return <div className="dir-card">{children}</div>;
+}
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="welcome" title="David Almoalem — Portfolio explorations" subtitle="Three directions for an international-grade independent designer/developer portfolio. Each is a full Hi-Fi clickable prototype with custom cursor, smooth scroll, magnetic buttons, marquee, page transitions, hover previews, and a Hebrew/English language toggle. Drag any artboard up to reorder. Open in fullscreen via the maximise icon to interact, or click 'Open prototype' to inspect at native size in a new tab.">
+        <DCArtboard id="intro" label="00 · Brief" width={1440} height={420}>
+          <div className="welcome">
+            <div className="row">
+              <div>
+                <div className="meta">(Project · 2026)</div>
+                <h1 style={{marginTop:14}}>Three directions <em>for a portfolio that travels.</em></h1>
+              </div>
+              <div>
+                <div className="lede">Each direction shares the same warm-cream / ink palette, the same content, the same content architecture — and arrives somewhere entirely different.</div>
+              </div>
+              <div>
+                <div className="meta">Reference brief<b>Independent designer / developer. Bilingual EN&nbsp;/&nbsp;HE. International-grade portfolio. Live cursor, smooth scroll, page transitions, project preview on hover.</b></div>
+                <div className="meta" style={{marginTop:24}}>Recommendation<b>Direction 01 — Editorial — most strongly references the considered, restrained category. Direction 03 — Display — is the strongest for press visibility and award juries.</b></div>
+              </div>
+            </div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="dirs" title="Three directions" subtitle="Click 'Open prototype' on any artboard, or use the maximise icon to view fullscreen and interact inside the canvas.">
+        <DCArtboard id="ed" label="01 · Editorial" width={1440} height={970}>
+          <Card>
+            <DirHeader
+              no="DIRECTION 01"
+              name="Editorial"
+              sub="An archive that ages well."
+              info1="Instrument Serif · Geist"
+              info2="Restrained, first-person, slow."
+              info3="Aristide Benoist · MGM&Co · cabinet-maker."
+              href="prototypes/editorial.html"
+            />
+            <Iframe src="prototypes/editorial.html" />
+          </Card>
+        </DCArtboard>
+
+        <DCArtboard id="mn" label="02 · Mono Studio" width={1440} height={970}>
+          <Card>
+            <DirHeader
+              no="DIRECTION 02"
+              name="Mono Studio"
+              sub="A workshop in public."
+              info1="JetBrains Mono · Geist"
+              info2="Direct, technical, low-key."
+              info3="Linear · Vercel · Read.cv. Builder energy."
+              href="prototypes/mono.html"
+            />
+            <Iframe src="prototypes/mono.html" />
+          </Card>
+        </DCArtboard>
+
+        <DCArtboard id="dp" label="03 · Display" width={1440} height={970}>
+          <Card>
+            <DirHeader
+              no="DIRECTION 03"
+              name="Display"
+              sub="Loud enough to be heard, quiet enough to be trusted."
+              info1="Bricolage Grotesque · Geist"
+              info2="Confident, contemporary, sharp."
+              info3="Dennis Snellenberg · Awwwards SOTD. Press-ready."
+              href="prototypes/display.html"
+            />
+            <Iframe src="prototypes/display.html" />
+          </Card>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("canvas-root")).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+# Build artifact — Cloudflare Pages regenerates on every push.
+dist/
+
+# Generated runtime artifact — regenerated from data/*.json on build.
+lib/content.js
+lib/site.css
+
+# Node / package managers (currently none — kept for future).
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Local environment
+.env
+.env.local
+.env.*.local
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+.cursor/
+
+# Logs
+*.log
+
+# OneDrive sync conflict copies
+*-{*}.{jpg,png,jpeg,gif}
+
+# Local design-canvas editor state — UI position cache, not content.
+.design-canvas.state.json
+
+# Per-project Claude Code settings — local agent config, not site code.
+.claude/

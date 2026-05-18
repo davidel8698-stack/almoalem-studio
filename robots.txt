@@ -1,0 +1,35 @@
+# robots.txt — almoalem.studio
+# ----------------------------------------------------------
+# Default: allow every well-behaved crawler everywhere.
+# Block known low-value scrapers (AI training crawlers the
+# studio doesn't opt into). Edit / remove these as you like.
+
+User-agent: *
+Allow: /
+
+# Block AI-training crawlers (opt-out signals — not legally binding,
+# but every reputable AI crawler honours them).
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+# Sitemap — pointed at the production origin. Update when deploying
+# anywhere else (sitemap URLs MUST be absolute, on the same host).
+Sitemap: https://almoalem.studio/sitemap.xml

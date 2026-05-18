@@ -1,0 +1,71 @@
+/* =============================================================
+   lib/fonts-self-hosted.css
+   -------------------------------------------------------------
+   @font-face declarations for self-hosted JetBrains Mono, Geist,
+   and Mona Sans (variable). Drop the matching .woff2 files into
+   lib/fonts/ (see lib/fonts/README.md for download URLs) and
+   switch your <head> from the Google Fonts <link> to:
+
+     <link rel="stylesheet" href="lib/fonts-self-hosted.css">
+
+   Why self-host:
+     • One DNS lookup eliminated (fonts.googleapis.com)
+     • One CDN hop eliminated (fonts.gstatic.com)
+     • Faster LCP on first visit (~50–150ms typical)
+     • No third-party fetch — privacy-friendly, GDPR-clean
+     • No risk of an upstream CDN outage breaking your typography
+
+   font-display: swap means the system fallback paints immediately
+   and is replaced when the woff2 is ready. No FOIT. Pair with
+   the `preload` tags below if you want zero-flash on critical
+   pages — see lib/fonts/README.md.
+   ============================================================= */
+
+/* ---- JetBrains Mono — variable, ital + wght ---- */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/JetBrainsMono-VariableFont_wght.woff2") format("woff2-variations"),
+       url("fonts/JetBrainsMono-VariableFont_wght.woff2") format("woff2");
+  font-variation-settings: normal;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/JetBrainsMono-Italic-VariableFont_wght.woff2") format("woff2-variations"),
+       url("fonts/JetBrainsMono-Italic-VariableFont_wght.woff2") format("woff2");
+}
+
+/* ---- Geist — variable, wght 100–900 ---- */
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/Geist-VariableFont_wght.woff2") format("woff2-variations"),
+       url("fonts/Geist-VariableFont_wght.woff2") format("woff2");
+}
+
+/* ---- Mona Sans — variable, ital + wdth (75-125) + wght (200-900) ---- */
+@font-face {
+  font-family: "Mona Sans";
+  font-style: normal;
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+  font-display: swap;
+  src: url("fonts/MonaSans[wdth,wght].woff2") format("woff2-variations"),
+       url("fonts/MonaSans[wdth,wght].woff2") format("woff2");
+}
+@font-face {
+  font-family: "Mona Sans";
+  font-style: italic;
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+  font-display: swap;
+  src: url("fonts/MonaSans-Italic[wdth,wght].woff2") format("woff2-variations"),
+       url("fonts/MonaSans-Italic[wdth,wght].woff2") format("woff2");
+}

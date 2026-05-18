@@ -1,0 +1,20 @@
+# Force text files to use LF (avoid CRLF mangling on Windows).
+*               text=auto eol=lf
+
+# Binary assets — never touch line endings.
+*.woff2         binary
+*.woff          binary
+*.ttf           binary
+*.otf           binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.webp          binary
+*.avif          binary
+*.ico           binary
+*.pdf           binary
+
+# Generated artifacts — exclude from diffs (still tracked when not in .gitignore).
+lib/content.js  -diff
+lib/site.css    -diff

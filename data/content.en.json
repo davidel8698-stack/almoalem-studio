@@ -1,0 +1,339 @@
+{
+  "name": "David Almoalem",
+  "role": "Independent Designer & Developer",
+  "location": "Tel Aviv / Remote",
+  "availability": "Booking projects · Q3 2026",
+  "nav": {
+    "work": "Work",
+    "about": "About",
+    "services": "Services",
+    "process": "Process",
+    "playground": "Playground",
+    "journal": "Journal",
+    "contact": "Get in touch"
+  },
+  "hero": {
+    "eyebrow": "Independent · Est. 2018",
+    "headline": [
+      "Designing",
+      "calm interfaces",
+      "for ambitious",
+      "products."
+    ],
+    "lede": "I'm David — an independent designer and developer building considered websites and brand systems for founders, studios and the occasional museum.",
+    "cta_primary": "See selected work",
+    "cta_secondary": "Start a project"
+  },
+  "intro": {
+    "kicker": "(Intro)",
+    "body": "I work end-to-end — strategy, identity, art direction, design, and the code that ships. No handoffs, no slide decks pretending to be products. Just a small number of careful engagements a year, made with the founders who'll live with them."
+  },
+  "work": {
+    "title": "Selected Work",
+    "meta": "2022 → 2026",
+    "view": "View project",
+    "projects": [
+      {
+        "id": "01",
+        "client": "Lumen Capital",
+        "scope": "Brand · Website · CMS",
+        "year": "2026",
+        "role": "Design & Build",
+        "color": "#1a1a1a",
+        "tint": "#dcd6c8",
+        "desc": "A reserved identity and editorial site for a thesis-driven investment firm.",
+        "slug": "lumen-capital"
+      },
+      {
+        "id": "02",
+        "client": "Tessera Studio",
+        "scope": "Identity · Webflow",
+        "year": "2025",
+        "role": "Design Direction",
+        "color": "#3a322a",
+        "tint": "#e8e2d4",
+        "desc": "Visual system and site for an architectural practice in Athens.",
+        "slug": "tessera-studio"
+      },
+      {
+        "id": "03",
+        "client": "Halcyon Museum",
+        "scope": "Exhibition site · React",
+        "year": "2025",
+        "role": "Lead Designer",
+        "color": "#1c2520",
+        "tint": "#d4d8d0",
+        "desc": "A scrollable exhibition for the museum's spring archive opening.",
+        "slug": "halcyon-museum"
+      },
+      {
+        "id": "04",
+        "client": "Object & Form",
+        "scope": "E-commerce · Shopify",
+        "year": "2024",
+        "role": "Design & Build",
+        "color": "#241f1a",
+        "tint": "#e3dcce",
+        "desc": "Editorial commerce for a small-batch homeware brand.",
+        "slug": "object-and-form"
+      },
+      {
+        "id": "05",
+        "client": "Northbound",
+        "scope": "SaaS marketing site",
+        "year": "2024",
+        "role": "Design & Build",
+        "color": "#15191c",
+        "tint": "#d6dadd",
+        "desc": "Repositioning and website for a logistics platform raising Series B.",
+        "slug": "northbound"
+      },
+      {
+        "id": "06",
+        "client": "Atelier Côte",
+        "scope": "Brand · Print · Web",
+        "year": "2023",
+        "role": "Brand Lead",
+        "color": "#231c18",
+        "tint": "#e0d6c6",
+        "desc": "From wordmark to wayfinding for a coastal hospitality group.",
+        "slug": "atelier-cote"
+      }
+    ]
+  },
+  "about": {
+    "title": "About",
+    "paragraphs": [
+      "I'm a designer based in Tel Aviv. For the last eight years I've worked independently with founders, studios and small institutions to make their digital presence quieter, sharper and a little more permanent-feeling.",
+      "Before going independent I was design lead at a product studio and, briefly, at an architectural office. The shift between the two — fast software, slow architecture — is still the most useful tension in how I work.",
+      "Outside of client work I write occasionally, run a small typography journal, and keep a playground of experiments that don't fit anywhere else."
+    ],
+    "facts": [
+      [
+        "Based in",
+        "Tel Aviv, IL"
+      ],
+      [
+        "Working since",
+        "2018"
+      ],
+      [
+        "Projects shipped",
+        "60+"
+      ],
+      [
+        "Currently",
+        "Solo · open for Q3"
+      ]
+    ]
+  },
+  "services": {
+    "title": "What I do",
+    "kicker": "(Services)",
+    "items": [
+      {
+        "n": "01",
+        "t": "Brand & Identity",
+        "d": "Wordmarks, visual systems, guidelines. The quiet kind, made to last."
+      },
+      {
+        "n": "02",
+        "t": "Website Design",
+        "d": "Editorial sites, marketing, portfolios. Always considered, never templated."
+      },
+      {
+        "n": "03",
+        "t": "Frontend Engineering",
+        "d": "React, Next.js, Webflow. I build what I design — no handoffs."
+      },
+      {
+        "n": "04",
+        "t": "Art Direction",
+        "d": "Direction for shoots, illustration, motion and the things between."
+      }
+    ]
+  },
+  "process": {
+    "title": "How we'll work",
+    "kicker": "(Process)",
+    "steps": [
+      {
+        "n": "01",
+        "t": "Conversation",
+        "d": "A first call to understand what you're really building and whether I'm right for it."
+      },
+      {
+        "n": "02",
+        "t": "Proposal",
+        "d": "A short written proposal: scope, schedule, budget. No decks."
+      },
+      {
+        "n": "03",
+        "t": "Discovery",
+        "d": "A week of listening, reading, sketching. We agree on the story before any pixels."
+      },
+      {
+        "n": "04",
+        "t": "Design",
+        "d": "Considered explorations in the open. You see real prototypes, not concept slides."
+      },
+      {
+        "n": "05",
+        "t": "Build",
+        "d": "I build what I design — clean code, no surprises at handoff."
+      },
+      {
+        "n": "06",
+        "t": "Launch & after",
+        "d": "Launch, then a month of attentive aftercare. I stay close."
+      }
+    ]
+  },
+  "testimonials": {
+    "title": "Kind words",
+    "items": [
+      {
+        "quote": "David is rare — a designer who actually ships the thing he draws, and ships it better than anyone we briefed before. He treats your business like it's his.",
+        "author": "Mira Halevy",
+        "role": "Co-founder, Lumen Capital"
+      },
+      {
+        "quote": "He folded into our team for six months and made everything around him quieter and more confident. The work is genuinely beautiful.",
+        "author": "Petros Vasiliou",
+        "role": "Director, Tessera Studio"
+      },
+      {
+        "quote": "I've worked with three studios in Tel Aviv. David is the only one who gave me the unglamorous answers I needed — and then designed something better than the glamorous ones promised.",
+        "author": "Yael Ronen",
+        "role": "Founder, Object & Form"
+      }
+    ]
+  },
+  "awards": {
+    "title": "Recognition",
+    "items": [
+      [
+        "Awwwards",
+        "Site of the Day · Lumen Capital",
+        "2026"
+      ],
+      [
+        "FWA",
+        "FWA of the Day · Halcyon Museum",
+        "2025"
+      ],
+      [
+        "CSSDA",
+        "Best UI · Tessera Studio",
+        "2025"
+      ],
+      [
+        "TDC",
+        "Typography in Use · Atelier Côte",
+        "2024"
+      ],
+      [
+        "Awwwards",
+        "Honorable Mention · Object & Form",
+        "2024"
+      ],
+      [
+        "Communication Arts",
+        "Webpicks · Northbound",
+        "2024"
+      ]
+    ]
+  },
+  "playground": {
+    "title": "Playground",
+    "kicker": "(Experiments)",
+    "lede": "Half-finished ideas, type studies, weekend code. Updated when the mood strikes.",
+    "items": [
+      {
+        "t": "Type specimen: Ada",
+        "d": "Variable serif specimen built in WebGL"
+      },
+      {
+        "t": "Cursor lab",
+        "d": "Twenty-three cursors in search of a context"
+      },
+      {
+        "t": "Newsletter no. 04",
+        "d": "On the courage to design slow software"
+      },
+      {
+        "t": "Field notes",
+        "d": "Photographs from a week in the Negev"
+      }
+    ]
+  },
+  "journal": {
+    "title": "Journal",
+    "kicker": "(Writing)",
+    "items": [
+      [
+        "No. 12",
+        "On working slowly, on purpose",
+        "Apr 2026",
+        "6 min",
+        "on-working-slowly-on-purpose"
+      ],
+      [
+        "No. 11",
+        "The case for boring portfolios",
+        "Feb 2026",
+        "4 min",
+        "the-case-for-boring-portfolios"
+      ],
+      [
+        "No. 10",
+        "Notes from a year of solo client work",
+        "Dec 2025",
+        "9 min",
+        "notes-from-a-year-of-solo-client-work"
+      ],
+      [
+        "No. 09",
+        "Why I left the agency",
+        "Oct 2025",
+        "7 min",
+        "why-i-left-the-agency"
+      ]
+    ]
+  },
+  "contact": {
+    "kicker": "(Let's talk)",
+    "title": [
+      "Have a project",
+      "in mind?"
+    ],
+    "lede": "I take on a small number of engagements each quarter. The earlier we talk, the better.",
+    "email": "hello@almoalem.studio",
+    "cta": "Write to me",
+    "lines": [
+      [
+        "Email",
+        "hello@almoalem.studio"
+      ],
+      [
+        "Schedule",
+        "cal.com/almoalem"
+      ],
+      [
+        "Elsewhere",
+        "Are.na · Read.cv · LinkedIn"
+      ]
+    ]
+  },
+  "footer": {
+    "copy": "© 2026 David Almoalem. All work is my own. Built carefully, by hand.",
+    "colophon": "Set in Instrument Serif & Geist · No cookies, no analytics, no nonsense."
+  },
+  "cursor": {
+    "default": "",
+    "view": "View",
+    "drag": "Drag",
+    "read": "Read",
+    "scroll": "Scroll"
+  }
+}
