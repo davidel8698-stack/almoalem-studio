@@ -72,6 +72,22 @@
   src: url("fonts/MonaSans-VariableFont_wdth_wght.woff2") format("woff2-variations"),
        url("fonts/MonaSans-VariableFont_wdth_wght.woff2") format("woff2");
 }
+
+/* ---- Mona Sans Fallback — metric-matched to system Arial ----
+   Used as second item in the font stack so the swap from Arial → Mona Sans
+   does not cause line-height / glyph-width shift. Values tuned for the
+   hero h1 where CLS was concentrated (was 0.262, target < 0.05).
+*/
+@font-face {
+  font-family: "Mona Sans Fallback";
+  font-style: normal;
+  font-weight: 200 900;
+  src: local("Arial"), local("Helvetica"), local("system-ui");
+  size-adjust: 100%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
 @font-face {
   font-family: "Mona Sans";
   font-style: italic;

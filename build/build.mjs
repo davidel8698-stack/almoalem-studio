@@ -44,6 +44,7 @@ import { existsSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
+import { PurgeCSS } from 'purgecss';
 import { SECTIONS } from './templates/partials.mjs';
 import { renderProjectPage } from './templates/project-page.mjs';
 import { buildHomeGraph, buildSitemap } from './templates/jsonld.mjs';
@@ -341,6 +342,7 @@ async function phase0d_minify() {
     { path: 'lib/core.js',       loader: 'js'  },
     { path: 'lib/content.js',    loader: 'js'  },
     { path: 'lib/content-loader.js', loader: 'js' },
+    { path: 'lib/main.js',       loader: 'js'  }, // extracted in phase 7
     { path: 'tweaks-panel.js',   loader: 'js'  },
     { path: 'design-canvas.js',  loader: 'js'  },
   ];
@@ -557,7 +559,9 @@ async function phase2() {
     log('  (skipped: proj-card click already patched)');
   }
 
-  // popstate → close overlay on browser back
+  // popstate → close overlay on browser back. The source-side mono.html
+  // already includes the popstate + inert wiring, so this patch is now a
+  // safety net for older source revisions only.
   const oldClose = `document.getElementById("close-detail").addEventListener("click", () => {
     detail.classList.remove("open");
   });`;
@@ -571,6 +575,8 @@ async function phase2() {
   if (homeHtml.includes(oldClose)) {
     homeHtml = homeHtml.replace(oldClose, newClose);
     log('  added popstate handler');
+  } else {
+    log('  (skipped: popstate handler already present in source)');
   }
 
   // -- 2.2c PS.initI18n("en") → PS.initI18n(lang) so the runtime never
@@ -884,6 +890,194 @@ async function phase6() {
 }
 
 // =============================================================
+// PHASE 7 — extract inline runtime <script> to lib/main.js
+// -------------------------------------------------------------
+// After all earlier phases have finished patching inline JS,
+// extract the big inline <script> blocks to a single external
+// lib/main.js loaded with `defer`. Adds `defer` to existing
+// lib/content.js + lib/core.js so the four scripts execute in
+// document order without blocking parse. Lighthouse flagged
+// ~75 KB of inline JS as render-blocking.
+// =============================================================
+async function phase7_extractInlineJs() {
+  head('Phase 7 — extract inline <script> to lib/main.js');
+
+  // Pages that contain the full runtime block.
+  const targets = [
+    { rel: 'index.html',     mainHref: 'lib/main.js' },
+    { rel: 'he/index.html',  mainHref: '../lib/main.js' },
+  ];
+
+  let mainWritten = false;
+  for (const t of targets) {
+    const p = join(DIST, t.rel);
+    if (!existsSync(p)) continue;
+    let html = await readFile(p, 'utf8');
+    const before = html.length;
+
+    // Match <script> with NO attributes and a non-empty body.
+    // JSON-LD uses <script type="…">, so it isn't captured.
+    const re = /<script>([\s\S]*?)<\/script>/g;
+    const blocks = [];
+    let m;
+    while ((m = re.exec(html)) !== null) {
+      if (m[1].trim().length > 0) {
+        blocks.push({ start: m.index, end: re.lastIndex, body: m[1] });
+      }
+    }
+
+    if (blocks.length) {
+      // The EN home is canonical for lib/main.js content. The HE home
+      // has the same body (he-home.mjs is derived from EN), so we
+      // write once.
+      if (!mainWritten) {
+        const combined = blocks
+          .map((b, i) => `/* ---- inline block ${i + 1} ---- */\n${b.body}\n`)
+          .join('\n');
+        await writeFile(join(DIST, 'lib/main.js'), combined, 'utf8');
+        log(`extracted ${blocks.length} block(s) → lib/main.js (${(combined.length / 1024).toFixed(1)} KB)`);
+        mainWritten = true;
+      } else {
+        log(`(re-using lib/main.js for ${t.rel} — ${blocks.length} block(s) elided)`);
+      }
+      for (let i = blocks.length - 1; i >= 0; i--) {
+        const b = blocks[i];
+        const replacement = (i === 0)
+          ? `<script src="${t.mainHref}" defer></script>`
+          : '';
+        html = html.slice(0, b.start) + replacement + html.slice(b.end);
+      }
+    }
+
+    // Defer every other <script src=…>.
+    html = html.replace(
+      /<script\s+src="([^"]+)"((?:\s+(?!defer\b|async\b)[a-z][^=>]*(?:="[^"]*")?)*)\s*>/gi,
+      (match, src, rest) => {
+        if (/\bdefer\b|\basync\b|\btype="module"/.test(match)) return match;
+        return `<script src="${src}"${rest} defer>`;
+      }
+    );
+
+    await writeFile(p, html, 'utf8');
+    ok(`${t.rel} script extraction (${before.toLocaleString()} → ${html.length.toLocaleString()} chars)`);
+  }
+}
+
+// =============================================================
+// PHASE 8 — PurgeCSS on lib/site.css
+// -------------------------------------------------------------
+// Lighthouse flagged ~94 KB of unused CSS in lib/site.css
+// (59% of the file). Purge against every emitted HTML page and
+// every shipped JS file. Safelist classes added dynamically by
+// the runtime (`is-open`, `is-flip`, `is-in`, etc) and anything
+// matching the `ps-*` namespace from lib/core.js.
+// =============================================================
+async function phase8_purgeCss() {
+  head('Phase 8 — PurgeCSS unused selectors');
+  const sitecssPath = join(DIST, 'lib/site.css');
+  if (!existsSync(sitecssPath)) { log('lib/site.css missing — skip'); return; }
+  const before = (await readFile(sitecssPath, 'utf8')).length;
+
+  // Build content list: every HTML page + every shipped JS file in dist/.
+  const allFiles = await walk(DIST);
+  const content = allFiles
+    .filter((f) => f.endsWith('.html') || f.endsWith('.js'))
+    .map((f) => join(DIST, f));
+
+  const result = await new PurgeCSS().purge({
+    content,
+    css: [sitecssPath],
+    // Critical structural / state classes added by JS or matched only
+    // against runtime-set attributes. Without these, PurgeCSS strips
+    // rules like `.is-open` (added programmatically when the panel
+    // opens) even though they're in active use.
+    safelist: {
+      standard: [
+        'open', 'loading', 'menu-open', 'clone-occupies',
+        'in', 'out', 'on', 'off', 'active', 'current',
+        'sr-only', 'visually-hidden', 'noscript',
+        'is-flip', 'is-open', 'is-in', 'is-current', 'is-on',
+        'is-down', 'is-transitioning', 'is-grown', 'is-static',
+        'is-ready', 'is-active', 'is-hidden',
+        'has-open', 'has-detail-open',
+        'inert', 'xray',
+      ],
+      // Match anything that starts with a known dynamic prefix.
+      deep: [
+        /^is-/, /^has-/, /^ps-/, /^mood-/, /^xray-/, /^lang-/,
+        /^ask-/, /^d-/, /^aw-/, /^ct-/, /^j-/, /^proc-/, /^svc-/,
+        /^pg-/, /^p-/, /^cur-/, /^ftr-/, /^msg-/,
+        /^data-mood/, /^data-lang/, /^data-screen/, /^data-bg/,
+        /^data-cursor/, /^data-magnetic/, /^data-marquee/, /^data-reveal/,
+      ],
+      // Preserve any rule that contains `[data-…]` attribute selectors —
+      // the values are runtime-set and PurgeCSS can't statically resolve them.
+      greedy: [/\[data-mood/, /\[data-lang/, /\[data-screen/],
+    },
+    fontFace: false,
+    keyframes: false,
+    variables: false,
+  });
+  if (!result[0]) { log('PurgeCSS returned no result — skipping write'); return; }
+  await writeFile(sitecssPath, result[0].css, 'utf8');
+  const after = result[0].css.length;
+  ok(`PurgeCSS: ${(before / 1024).toFixed(1)} → ${(after / 1024).toFixed(1)} KB (−${((1 - after / before) * 100).toFixed(1)}%)`);
+}
+
+// =============================================================
+// PHASE 9 — Critical CSS inline + async load of the rest
+// -------------------------------------------------------------
+// Inlines a small slice of lib/site.css (the rules that style
+// the first viewport: reset, tokens, fonts, nav, hero, .section)
+// directly into <head>, and rewrites the <link rel="stylesheet">
+// to use the preload-swap trick so the rest loads async without
+// blocking render.
+// =============================================================
+async function phase9_criticalCss() {
+  head('Phase 9 — inline critical CSS');
+  const sitecssPath = join(DIST, 'lib/site.css');
+  if (!existsSync(sitecssPath)) { log('lib/site.css missing — skip'); return; }
+  const css = await readFile(sitecssPath, 'utf8');
+
+  // Heuristic critical extract: take everything up to (but not including)
+  // the section that handles below-fold content. We anchor on the rule
+  // for the WORK section, which is the first below-fold block.
+  let critical = '';
+  const anchors = ['\n.work {', '\n.work-grid {', '\n.proj-card {', '\n.about {'];
+  for (const a of anchors) {
+    const idx = css.indexOf(a);
+    if (idx > 0 && (critical === '' || idx < critical.length)) {
+      critical = css.slice(0, idx);
+    }
+  }
+  if (!critical) critical = css.slice(0, 14 * 1024);
+  const lastBrace = critical.lastIndexOf('}');
+  if (lastBrace > 0) critical = critical.slice(0, lastBrace + 1);
+
+  // Patch every HTML file that links lib/site.css.
+  const allFiles = await walk(DIST);
+  let patched = 0;
+  for (const rel of allFiles.filter((f) => f.endsWith('.html'))) {
+    const p = join(DIST, rel);
+    let html = await readFile(p, 'utf8');
+    // Match either "lib/site.css" or "../lib/site.css" depending on
+    // page depth in the dist tree.
+    const linkRe = /<link\s+rel="stylesheet"\s+href="((?:\.\.\/)*lib\/site\.css)"\s*>/;
+    const m = html.match(linkRe);
+    if (!m) continue;
+    const href = m[1];
+    const inlineCritical =
+      `<style id="critical-css">\n${critical}\n</style>\n` +
+      `<link rel="preload" as="style" href="${href}" onload="this.onload=null;this.rel='stylesheet'">\n` +
+      `<noscript><link rel="stylesheet" href="${href}"></noscript>`;
+    html = html.replace(linkRe, inlineCritical);
+    await writeFile(p, html, 'utf8');
+    patched++;
+  }
+  ok(`critical CSS inlined (${(critical.length / 1024).toFixed(1)} KB) into ${patched} page(s)`);
+}
+
+// =============================================================
 // HELPERS
 // =============================================================
 async function walk(dir) {
@@ -921,6 +1115,16 @@ async function main() {
   // regenerated in Phase 5 sees the journal URLs and includes them.
   if (PHASE >= 5) await phase6();
   if (PHASE >= 5) await phase5();
+  // Phase 7 — extract inline JS. Runs AFTER every phase that string-
+  // patches inline JS (phases 2 + 4) so the patches survive extraction.
+  if (PHASE >= 7) await phase7_extractInlineJs();
+  // Phase 8 — PurgeCSS unused selectors. Runs AFTER phase 7 so the
+  // extracted lib/main.js is part of the content scan and any classes
+  // it touches are kept. Runs BEFORE critical CSS extraction so the
+  // critical slice is built against the purged stylesheet.
+  if (PHASE >= 8) await phase8_purgeCss();
+  // Phase 9 — inline critical CSS. After purge so the slice is purged-clean.
+  if (PHASE >= 9) await phase9_criticalCss();
   // Minify runs last so every phase that mutates CSS/JS does so against
   // a readable, pattern-matchable source (phase4's selector-expansion
   // string-replace would fail against minified CSS).

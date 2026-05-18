@@ -9,7 +9,8 @@
     "build:clean": "node build/build.mjs --clean"
   },
   "devDependencies": {
-    "esbuild": "^0.24.0"
+    "esbuild": "^0.24.0",
+    "purgecss": "^6.0.0"
   },
   "engines": {
     "node": ">=18"

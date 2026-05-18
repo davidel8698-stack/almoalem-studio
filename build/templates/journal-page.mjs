@@ -199,7 +199,7 @@ ${JSON.stringify(jsonLd, null, 2)}
   <span class="r">Set in Geist + JetBrains Mono · <b>no analytics</b> · no cookies · plain html</span>
 </footer>
 
-<script src="${REL}/lib/core.js"></script>
+<script src="${REL}/lib/core.js" defer></script>
 </body>
 </html>`;
 }
@@ -380,7 +380,7 @@ ${JSON.stringify(jsonLd, null, 2)}
   <span class="r">Set in Geist + JetBrains Mono · <b>no analytics</b> · no cookies · plain html</span>
 </footer>
 
-<script src="${REL}/lib/core.js"></script>
+<script src="${REL}/lib/core.js" defer></script>
 </body>
 </html>`;
 }

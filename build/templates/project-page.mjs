@@ -368,7 +368,7 @@ ${renderJsonLd(c, siteUrl, lang)}
 </style>
 
 <!-- Minimal JS: cursor / smooth-scroll / magnetic / reveal -->
-<script src="${REL}/lib/core.js"></script>
+<script src="${REL}/lib/core.js" defer></script>
 
 </body>
 </html>`;
