@@ -44,3 +44,9 @@ desktop.ini
 
 # Per-project Claude Code settings — local agent config, not site code.
 .claude/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
