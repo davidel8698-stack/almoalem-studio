@@ -10,5 +10,6 @@
 /he/work/:slug   /he/work/:slug/   301
 /journal/:slug   /journal/:slug/   301
 
-# --- Catch-all 404 fallback (Cloudflare also auto-serves /404.html) ---
-/*   /404.html   404
+# Note: Cloudflare Pages auto-serves /404.html for unmatched routes;
+# no explicit catch-all needed. (Netlify requires `/*  /404.html  404`,
+# but Cloudflare rejects status 404 in _redirects — it's reserved.)
