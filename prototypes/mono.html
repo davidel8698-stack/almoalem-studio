@@ -5025,7 +5025,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   <div class="contact-row">
     <div class="l">
       <p class="lede" data-i18n="contact.lede">I take on a small number of engagements each quarter. The earlier we talk, the better.</p>
-      <a class="btn-mail" href="mailto:hello@almoalem.studio" data-magnetic="0.32" data-cursor="view" data-cursor-text="Send">
+      <a class="btn-mail" href="mailto:hello@almoalem.studio">
         <span><span data-i18n="contact.cta">Write to me</span> — hello@almoalem.studio</span>
         <span class="arr-box">↗</span>
       </a>
@@ -5096,14 +5096,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   <span class="c">Crafted by hand in Tel Aviv · 32.0853° N</span>
   <span class="r">Set in Geist + JetBrains Mono · <b>no analytics</b> · no cookies · plain html</span>
 </footer>
-
-<!-- ===================== HOVER PREVIEW ===================== -->
-<div class="ps-hover-preview" id="hover-pv">
-  <div class="ps-placeholder">
-    <div class="meta"><span id="hpv-num">01</span><span id="hpv-year">2026</span></div>
-    <div class="name" id="hpv-name">Project</div>
-  </div>
-</div>
 
 <!-- LAYER 3 — scroll progress + ascii clock -->
 <div class="scrollbar-line" id="scroll-line"></div>
@@ -5646,8 +5638,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
      CORE INITS
      ========================================================== */
   PS.initI18n("en");
-  PS.initReveal();
-  PS.initMagnetic();
 
   /* ==========================================================
      LANGUAGE TOGGLE
@@ -5658,37 +5648,19 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     langBtns.forEach(x => x.classList.toggle("active", x === b));
     render();
     PS.initI18n(lang);
-    PS.initReveal();
     bindWorkRows();
   }));
 
   /* ==========================================================
-     WORK — hover preview + horizontal scroll progress + arrow keys
+     WORK — horizontal scroll progress + arrow keys
+     (hover preview removed — cursor stays native)
      ========================================================== */
-  const pv = document.getElementById("hover-pv");
   function bindWorkRows() {
     document.querySelectorAll(".proj-card").forEach((card) => {
-      card.addEventListener("mouseenter", () => {
-        const i = +card.dataset.idx;
-        const p = data().work.projects[i];
-        pv.style.setProperty("--tint", p.tint);
-        const hpvNum = document.getElementById('hpv-num');
-        const hpvYear = document.getElementById('hpv-year');
-        const hpvName = document.getElementById('hpv-name');
-        if (hpvNum)  hpvNum.textContent  = `// ${p.id}`;
-        if (hpvYear) hpvYear.textContent = p.year;
-        if (hpvName) hpvName.textContent = p.client;
-        pv.classList.add("is-on");
-      });
-      card.addEventListener("mouseleave", () => pv.classList.remove("is-on"));
       card.addEventListener("click", (e) => { e.preventDefault(); openDetail(+card.dataset.idx); });
     });
   }
   bindWorkRows();
-  document.addEventListener("mousemove", (e) => {
-    pv.style.left = e.clientX + "px";
-    pv.style.top  = e.clientY + "px";
-  });
 
   const scroller = document.getElementById("work-scroller");
   const progress = document.getElementById("work-progress");
@@ -5962,45 +5934,10 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   }, DUR + 250);
 
   /* ==========================================================
-     LAYER 1 — SCROLL VELOCITY → HERO FONT VARIATION
-     The hero headline slims down as you scroll faster.
-     Bounds: wght 360..760, wdth 78..100.
+     LAYER 1 — HERO FONT INTRO (scroll-velocity reactivity removed —
+     hero font no longer responds to scroll speed)
      ========================================================== */
-  let lastY = window.scrollY;
-  let lastT = performance.now();
   let curWght = 720;
-  let curWdth = 92;
-  let tgtWght = 720;
-  let tgtWdth = 92;
-  let velocity = 0;
-
-  function readVelocity() {
-    const now = performance.now();
-    const y = window.scrollY;
-    const dt = Math.max(1, now - lastT);
-    const dy = y - lastY;
-    const v = Math.abs(dy / dt); // px per ms
-    velocity = velocity * 0.7 + v * 0.3;
-    lastY = y; lastT = now;
-  }
-  window.addEventListener("scroll", readVelocity, { passive: true });
-  window.addEventListener("ps:scroll", readVelocity);
-
-  function fontLoop() {
-    // map velocity (0..3 px/ms) to wght change
-    const vClamped = Math.min(velocity, 3) / 3; // 0..1
-    tgtWght = 720 - vClamped * 360;            // 720..360
-    tgtWdth = 92 - vClamped * 14;              // 92..78
-    // smooth toward target
-    curWght += (tgtWght - curWght) * 0.12;
-    curWdth += (tgtWdth - curWdth) * 0.12;
-    document.documentElement.style.setProperty("--hero-wght", curWght.toFixed(0));
-    document.documentElement.style.setProperty("--hero-wdth", curWdth.toFixed(1));
-    // decay velocity when not scrolling
-    velocity *= 0.9;
-    requestAnimationFrame(fontLoop);
-  }
-  requestAnimationFrame(fontLoop);
 
   function runHeroFontIntro() {
     // Subtle wght breathe on first reveal: 760 → 720 over 1.6s
@@ -6101,26 +6038,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   });
 
   /* ==========================================================
-     LAYER 3 — Hero parallax (subtle, restrained)
-     ========================================================== */
-  const heroH1 = document.querySelector('.hero-h1');
-  const heroMeta = document.querySelector('.hero-meta');
-  const heroCurr = document.querySelector('.currently');
-  const heroRunt = document.querySelector('.runtime');
-
-  function paraLoop() {
-    const y = window.scrollY;
-    // Negative/upward parallax only — never push elements DOWN past the hero
-    // (which would cause them to overlap the next section's divider strip).
-    if (heroH1)   heroH1.style.transform   = `translate3d(0, ${(-y * 0.10).toFixed(1)}px, 0)`;
-    if (heroMeta) heroMeta.style.transform = `translate3d(0, ${(-y * 0.04).toFixed(1)}px, 0)`;
-    if (heroCurr) heroCurr.style.transform = `translate3d(0, ${(-y * 0.06).toFixed(1)}px, 0)`;
-    if (heroRunt) heroRunt.style.transform = `translate3d(0, 0, 0)`;
-    requestAnimationFrame(paraLoop);
-  }
-  requestAnimationFrame(paraLoop);
-
-  /* ==========================================================
      LAYER 3 — Section enter (.is-in) — animates section header
      ========================================================== */
   const sectionIo = new IntersectionObserver((entries) => {
@@ -6167,27 +6084,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     checkSection();
   });
   }
-
-  /* ==========================================================
-     LAYER 3 — Re-tag cursors: send for email, dot for hero, etc.
-     ========================================================== */
-  document.querySelector('.btn-mail')?.setAttribute('data-cursor', 'send');
-  document.querySelector('.btn-mail')?.setAttribute('data-cursor-text', 'Send');
-  document.querySelectorAll('.t-card').forEach(el => {
-    el.setAttribute('data-cursor', 'read');
-    el.setAttribute('data-cursor-text', 'Read');
-  });
-  document.querySelectorAll('.j').forEach(el => {
-    el.setAttribute('data-cursor', 'read');
-    el.setAttribute('data-cursor-text', 'Read');
-  });
-
-  /* ==========================================================
-     LAYER 3 — Magnetic on more elements
-     ========================================================== */
-  document.querySelectorAll('.proj-card .arr').forEach(a => a.setAttribute('data-magnetic', '0.5'));
-  document.querySelectorAll('.nav .links a').forEach(a => a.setAttribute('data-magnetic', '0.18'));
-  PS.initMagnetic();
 
   /* ==========================================================
      LAYER 3 — ASCII clock — pulses through the day
