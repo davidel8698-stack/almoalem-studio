@@ -19,6 +19,18 @@
    and is replaced when the woff2 is ready. No FOIT. Pair with
    the `preload` tags below if you want zero-flash on critical
    pages — see lib/fonts/README.md.
+
+   CLS note: the Lighthouse audit of 2026-05-18 traced .slash SPAN
+   shift (CLS=0.137) to a *double-fetch* of MonaSans, not to font
+   swap timing. The preload used a URL-encoded filename
+   (MonaSans%5Bwdth,wght%5D.woff2) while the CSS used the unencoded
+   form, so the browser cached them as two different resources and
+   re-downloaded the font *after* FCP, causing the swap shift. The
+   font filename was renamed to be bracket-free (commit 2026-05-18)
+   so preload + CSS now hit the same cache key. If a residual swap
+   shift remains, add `size-adjust` + `ascent-override` /
+   `descent-override` here using https://katiehempenius.com/font-metric-overrides
+   to tune system-ui fallback to match each web font's metrics.
    ============================================================= */
 
 /* ---- JetBrains Mono — variable, ital + wght ---- */
@@ -57,8 +69,8 @@
   font-weight: 200 900;
   font-stretch: 75% 125%;
   font-display: swap;
-  src: url("fonts/MonaSans[wdth,wght].woff2") format("woff2-variations"),
-       url("fonts/MonaSans[wdth,wght].woff2") format("woff2");
+  src: url("fonts/MonaSans-VariableFont_wdth_wght.woff2") format("woff2-variations"),
+       url("fonts/MonaSans-VariableFont_wdth_wght.woff2") format("woff2");
 }
 @font-face {
   font-family: "Mona Sans";
@@ -66,6 +78,6 @@
   font-weight: 200 900;
   font-stretch: 75% 125%;
   font-display: swap;
-  src: url("fonts/MonaSans-Italic[wdth,wght].woff2") format("woff2-variations"),
-       url("fonts/MonaSans-Italic[wdth,wght].woff2") format("woff2");
+  src: url("fonts/MonaSans-Italic-VariableFont_wdth_wght.woff2") format("woff2-variations"),
+       url("fonts/MonaSans-Italic-VariableFont_wdth_wght.woff2") format("woff2");
 }

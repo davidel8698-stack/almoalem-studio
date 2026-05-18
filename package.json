@@ -1,0 +1,17 @@
+{
+  "name": "almoalem-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "almoalem.studio — independent designer/developer portfolio. Pure-Node static-site build with esbuild for JSX/CSS/JS optimization.",
+  "scripts": {
+    "build": "node build/build.mjs",
+    "build:clean": "node build/build.mjs --clean"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

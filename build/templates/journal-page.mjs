@@ -135,7 +135,7 @@ export function renderJournalLanding({ content, siteUrl, lang }) {
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${siteUrl}/og.png">
 
-<link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/MonaSans%5Bwdth,wght%5D.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/MonaSans-VariableFont_wdth_wght.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/Geist-VariableFont_wght.woff2" crossorigin>
 <link rel="stylesheet" href="${REL}/lib/fonts-self-hosted.css">
 <link rel="stylesheet" href="${REL}/lib/site.css">
@@ -304,7 +304,7 @@ export function renderJournalArticle({ article, slug, content, siteUrl, prevSlug
 ${prevItem ? `<link rel="prev" href="../${esc(prevSlug)}/">` : ''}
 ${nextItem ? `<link rel="next" href="../${esc(nextSlug)}/">` : ''}
 
-<link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/MonaSans%5Bwdth,wght%5D.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/MonaSans-VariableFont_wdth_wght.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/Geist-VariableFont_wght.woff2" crossorigin>
 <link rel="stylesheet" href="${REL}/lib/fonts-self-hosted.css">
 <link rel="stylesheet" href="${REL}/lib/site.css">

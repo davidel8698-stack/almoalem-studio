@@ -3,11 +3,21 @@
 // -------------------------------------------------------------
 // Static-site build for almoalem.studio.
 //
-// PHASE 0 (current):
+// PHASE 0:
 //   Copies prototypes/mono.html → dist/index.html with paths
 //   rewritten for dist-root depth (../lib/ → lib/, etc).
 //   Copies all runtime assets to dist/. Verifiable parity with
 //   the live prototype.
+//
+// PHASE 0c (new):
+//   Pre-compiles every .jsx file and inline <script type="text/babel">
+//   to plain JS via esbuild. Eliminates @babel/standalone (3MB) and
+//   the dev-only React UMD from the production bundle. After this
+//   phase, no JSX or text/babel survives in dist/.
+//
+// PHASE 0d (new):
+//   Minifies CSS + JS in dist/ via esbuild. site.css drops ~33%,
+//   core.js / content.js drop ~30%.
 //
 // PHASE 1 (next):
 //   Replaces <!-- @prerender:* --> markers with HTML rendered
@@ -25,13 +35,15 @@
 //           node build/build.mjs --clean   # clears dist/ first
 //           node build/build.mjs --phase=0 # stop after phase N
 //
-// Pure Node — no dependencies. Tested on Node ≥18.
+// Dependencies: esbuild (devDependency, run `npm install` once).
+// Tested on Node ≥18.
 // =============================================================
 
-import { readFile, writeFile, mkdir, cp, rm, readdir, stat } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, cp, rm, readdir, stat, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as esbuild from 'esbuild';
 import { SECTIONS } from './templates/partials.mjs';
 import { renderProjectPage } from './templates/project-page.mjs';
 import { buildHomeGraph, buildSitemap } from './templates/jsonld.mjs';
@@ -209,6 +221,149 @@ async function phase0() {
   const distFiles = await walk(DIST);
   log('');
   log(`dist/ → ${distFiles.length} files emitted`);
+}
+
+// =============================================================
+// PHASE 0c — JSX → JS pre-compile (esbuild)
+// -------------------------------------------------------------
+// Strips <script type="text/babel"> + @babel/standalone from
+// the production bundle. Compiles each .jsx → .js, transforms
+// every inline text/babel block into plain JS, rewrites <script
+// type="text/babel" src="x.jsx"> → <script src="x.js" defer>,
+// and removes the dev-only Babel loader gate.
+//
+// After this phase, grep -r "text/babel" dist/ returns nothing.
+// =============================================================
+async function phase0c_compileJsx() {
+  head('Phase 0c — compile JSX → JS (esbuild)');
+
+  // -- 0c.1 compile each loose .jsx file in dist/ root --
+  const distFiles = await readdir(DIST);
+  const jsxFiles = distFiles.filter((f) => f.endsWith('.jsx'));
+  for (const jsx of jsxFiles) {
+    const src = await readFile(join(DIST, jsx), 'utf8');
+    const out = await esbuild.transform(src, {
+      loader: 'jsx',
+      jsx: 'transform',                       // classic React.createElement
+      jsxFactory: 'React.createElement',      // matches global React UMD
+      jsxFragment: 'React.Fragment',
+      target: ['es2018'],                     // safe for all modern browsers
+      sourcemap: false,
+      legalComments: 'none',
+    });
+    const jsName = jsx.replace(/\.jsx$/, '.js');
+    await writeFile(join(DIST, jsName), out.code, 'utf8');
+    await unlink(join(DIST, jsx));
+    log(`compiled ${jsx} → ${jsName} (${(out.code.length / 1024).toFixed(1)} KB)`);
+  }
+
+  // -- 0c.2 rewrite dist/index.html: <script type="text/babel"> → plain --
+  const indexPath = join(DIST, 'index.html');
+  let html = await readFile(indexPath, 'utf8');
+  const before = html.length;
+
+  // Park HTML comments before regex passes. Comments may legitimately
+  // contain the literal string `<script type="text/babel">` (in docs
+  // or rationale), and our non-greedy regex would otherwise match
+  // across the comment closing into real code.
+  const commentSlots = [];
+  html = html.replace(/<!--[\s\S]*?-->/g, (m) => {
+    commentSlots.push(m);
+    return `__BUILD_COMMENT_${commentSlots.length - 1}__`;
+  });
+
+  // Inline <script type="text/babel">…</script> → compiled inline <script>
+  html = await replaceAsync(
+    html,
+    /<script\s+type="text\/babel">([\s\S]*?)<\/script>/g,
+    async (_match, body) => {
+      const out = await esbuild.transform(body, {
+        loader: 'jsx',
+        jsx: 'transform',
+        jsxFactory: 'React.createElement',
+        jsxFragment: 'React.Fragment',
+        target: ['es2018'],
+        legalComments: 'none',
+      });
+      return `<script>${out.code}</script>`;
+    }
+  );
+
+  // External <script type="text/babel" src="x.jsx"> → <script src="x.js">.
+  // Intentionally NOT defer: tweaks-panel.js installs window.TweaksPanel etc.
+  // as a side effect, and the following inline <script> block consumes
+  // those globals during parse. Defer would invert that ordering.
+  html = html.replace(
+    /<script\s+type="text\/babel"\s+src="([^"]+)\.jsx"[^>]*><\/script>/g,
+    '<script src="$1.js"></script>'
+  );
+
+  // Strip the dev-only Babel gate (the <script>…isLocal…@babel/standalone…</script>
+  // we inject in prototypes/mono.html for in-place .jsx editing). In dist/ all
+  // JSX has been pre-compiled, so the gate would only ever no-op.
+  html = html.replace(
+    /<script>\s*\(function\s*\(\)\s*\{[^]*?@babel\/standalone[^]*?\}\)\(\);\s*<\/script>/g,
+    ''
+  );
+
+  // Restore parked HTML comments.
+  html = html.replace(/__BUILD_COMMENT_(\d+)__/g, (_, i) => commentSlots[Number(i)]);
+
+  await writeFile(indexPath, html, 'utf8');
+  ok(`dist/index.html JSX-free (${before.toLocaleString()} → ${html.length.toLocaleString()} chars)`);
+}
+
+// Small async replace helper — String.replace doesn't await async callbacks.
+async function replaceAsync(str, regex, asyncFn) {
+  const promises = [];
+  str.replace(regex, (match, ...args) => {
+    promises.push(asyncFn(match, ...args));
+    return match;
+  });
+  const data = await Promise.all(promises);
+  return str.replace(regex, () => data.shift());
+}
+
+// =============================================================
+// PHASE 0d — minify CSS + JS in dist/ (esbuild)
+// -------------------------------------------------------------
+// Runs after JSX compile so the compiled .js files are also
+// minified. Lighthouse flagged site.css (53 KB savings) and
+// content.js/core.js (4-8 KB each) as un-minified.
+// =============================================================
+async function phase0d_minify() {
+  head('Phase 0d — minify CSS + JS');
+
+  const targets = [
+    { path: 'lib/site.css',      loader: 'css' },
+    { path: 'lib/core.css',      loader: 'css' },
+    { path: 'lib/fonts-self-hosted.css', loader: 'css' },
+    { path: 'lib/core.js',       loader: 'js'  },
+    { path: 'lib/content.js',    loader: 'js'  },
+    { path: 'lib/content-loader.js', loader: 'js' },
+    { path: 'tweaks-panel.js',   loader: 'js'  },
+    { path: 'design-canvas.js',  loader: 'js'  },
+  ];
+
+  for (const t of targets) {
+    const p = join(DIST, t.path);
+    if (!existsSync(p)) continue;
+    const src = await readFile(p, 'utf8');
+    const out = await esbuild.transform(src, {
+      loader: t.loader,
+      minify: true,
+      target: t.loader === 'css' ? ['chrome90', 'firefox88', 'safari14'] : ['es2018'],
+      legalComments: 'none',
+      // Keep Hebrew/RTL characters as UTF-8 rather than \uXXXX escapes —
+      // א is 6 bytes per Hebrew letter vs 2 bytes UTF-8, so without
+      // this the bilingual content.js GROWS rather than shrinks.
+      charset: 'utf8',
+    });
+    await writeFile(p, out.code, 'utf8');
+    const saved = ((1 - out.code.length / src.length) * 100).toFixed(1);
+    log(`minified ${t.path}: ${(src.length / 1024).toFixed(1)} → ${(out.code.length / 1024).toFixed(1)} KB (−${saved}%)`);
+  }
+  ok('CSS + JS minified');
 }
 
 // =============================================================
@@ -751,7 +906,10 @@ async function main() {
     ok('dist/ removed');
   }
 
-  if (PHASE >= 0) await phase0();
+  if (PHASE >= 0) {
+    await phase0();
+    await phase0c_compileJsx();
+  }
   if (PHASE >= 1) {
     await phase1();
     await phase1b_extractCss();
@@ -763,6 +921,10 @@ async function main() {
   // regenerated in Phase 5 sees the journal URLs and includes them.
   if (PHASE >= 5) await phase6();
   if (PHASE >= 5) await phase5();
+  // Minify runs last so every phase that mutates CSS/JS does so against
+  // a readable, pattern-matchable source (phase4's selector-expansion
+  // string-replace would fail against minified CSS).
+  if (PHASE >= 0) await phase0d_minify();
 
   console.log('\n── Build complete.\n');
 }

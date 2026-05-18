@@ -150,8 +150,11 @@ export async function buildHeHome({ rootDir, distDir, log = () => {} }) {
   //         lib/* and root-level component refs need a leading "../".
   h = h.replace(/href="lib\//g, 'href="../lib/');
   h = h.replace(/src="lib\//g, 'src="../lib/');
-  h = h.replace(/src="tweaks-panel\.jsx"/g, 'src="../tweaks-panel.jsx"');
-  h = h.replace(/src="design-canvas\.jsx"/g, 'src="../design-canvas.jsx"');
+  // The JSX→JS pre-compile in phase0c renames these to .js; keep .jsx
+  // patterns too in case he-home runs against a pre-0c source (or someone
+  // runs --phase=0 without 0c).
+  h = h.replace(/src="tweaks-panel\.(jsx|js)"/g, 'src="../tweaks-panel.$1"');
+  h = h.replace(/src="design-canvas\.(jsx|js)"/g, 'src="../design-canvas.$1"');
   h = h.replace(/href="favicon/g, 'href="../favicon');
   h = h.replace(/href="apple-touch/g, 'href="../apple-touch');
   h = h.replace(/href="site\.webmanifest"/g, 'href="../site.webmanifest"');

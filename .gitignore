@@ -42,5 +42,10 @@ desktop.ini
 # Local design-canvas editor state — UI position cache, not content.
 .design-canvas.state.json
 
+# Lighthouse / PageSpeed audit reports — working artifacts, not site content.
+*.pages.dev_*.json
+almoalem.studio_*.json
+lighthouse-*.json
+
 # Per-project Claude Code settings — local agent config, not site code.
 .claude/

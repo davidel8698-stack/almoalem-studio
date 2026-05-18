@@ -209,7 +209,7 @@ export function renderProjectPage({ caseStudy, allCases, allProjects, siteUrl, l
 <link rel="next" href="../${next}/">
 
 <!-- Fonts + main stylesheet (self-hosted; shared with home for caching) -->
-<link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/MonaSans%5Bwdth,wght%5D.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/MonaSans-VariableFont_wdth_wght.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="${REL}/lib/fonts/Geist-VariableFont_wght.woff2" crossorigin>
 <link rel="stylesheet" href="${REL}/lib/fonts-self-hosted.css">
 <link rel="stylesheet" href="${REL}/lib/site.css">

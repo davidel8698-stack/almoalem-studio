@@ -11,8 +11,15 @@ them. Total weight: ~250 KB.
 | `JetBrainsMono-VariableFont_wght.woff2` | JetBrains Mono official | https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/webfonts/JetBrainsMono%5Bwght%5D.woff2 |
 | `JetBrainsMono-Italic-VariableFont_wght.woff2` | JetBrains Mono official | https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/webfonts/JetBrainsMono-Italic%5Bwght%5D.woff2 |
 | `Geist-VariableFont_wght.woff2` | Vercel | https://github.com/vercel/geist-font/raw/main/packages/next/fonts/Geist/woff2/Geist-Variable.woff2 |
-| `MonaSans[wdth,wght].woff2` | GitHub Mona Sans | https://github.com/github/mona-sans/raw/main/fonts/webfonts/MonaSans%5Bwdth,wght%5D.woff2 |
-| `MonaSans-Italic[wdth,wght].woff2` | GitHub Mona Sans | https://github.com/github/mona-sans/raw/main/fonts/webfonts/MonaSans-Italic%5Bwdth,wght%5D.woff2 |
+| `MonaSans-VariableFont_wdth_wght.woff2` | GitHub Mona Sans | https://github.com/github/mona-sans/raw/main/fonts/webfonts/MonaSans%5Bwdth,wght%5D.woff2 |
+| `MonaSans-Italic-VariableFont_wdth_wght.woff2` | GitHub Mona Sans | https://github.com/github/mona-sans/raw/main/fonts/webfonts/MonaSans-Italic%5Bwdth,wght%5D.woff2 |
+
+> The upstream files ship with literal `[` `]` in the filename (e.g.
+> `MonaSans[wdth,wght].woff2`). We rename to `MonaSans-VariableFont_wdth_wght.woff2`
+> on download because a `<link rel="preload" href>` URL-encodes brackets
+> (`%5B…%5D`) while a CSS `url(...)` does not, producing two cache keys for
+> the same file and a duplicate font download on every cold load. The
+> bracket-free name avoids that gotcha entirely.
 
 ## After download — flip the switch
 
@@ -27,7 +34,7 @@ In every HTML file's `<head>`, replace the Google Fonts block:
 
 <!-- after -->
 <link rel="preload" as="font" type="font/woff2"
-      href="lib/fonts/MonaSans[wdth,wght].woff2" crossorigin>
+      href="lib/fonts/MonaSans-VariableFont_wdth_wght.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2"
       href="lib/fonts/Geist-VariableFont_wght.woff2" crossorigin>
 <link rel="stylesheet" href="lib/fonts-self-hosted.css">

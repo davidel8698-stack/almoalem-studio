@@ -78,7 +78,7 @@
      Self-hosted variable fonts (one DNS lookup eliminated, no
      fonts.gstatic.com dependency, GDPR-clean, faster LCP).
      ============================================================ -->
-<link rel="preload" as="font" type="font/woff2" href="../lib/fonts/MonaSans%5Bwdth,wght%5D.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../lib/fonts/MonaSans-VariableFont_wdth_wght.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="../lib/fonts/Geist-VariableFont_wght.woff2" crossorigin>
 <link rel="stylesheet" href="../lib/fonts-self-hosted.css">
 <link rel="stylesheet" href="../lib/core.css">
@@ -5351,10 +5351,30 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
 
 <script src="../lib/content.js"></script>
 <script src="../lib/core.js"></script>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<!-- React/ReactDOM: production-min UMD only. Dev builds add 1MB+ of dev-only
+     assertions and are 10-20× larger than the production minified UMD. -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<!-- tweaks-panel.jsx is dev-only tooling. When viewed directly (not through
+     the build), browsers ignore a script tag with type=text/babel until
+     Babel is loaded, so this tag is inert by default. The gate below
+     loads Babel and invokes transform only on localhost / ?debug=1,
+     keeping the 3MB transpiler out of production traffic. In dist/ the
+     build.mjs phase0c pre-compiles the JSX so neither the gate nor
+     Babel itself ship to production. -->
 <script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script>
+  (function () {
+    var p = new URLSearchParams(location.search);
+    var isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    if (!(isLocal || p.get("debug") === "1")) return;
+    var s = document.createElement("script");
+    s.src = "https://unpkg.com/@babel/standalone@7.29.0/babel.min.js";
+    s.crossOrigin = "anonymous";
+    s.onload = function () { if (window.Babel) Babel.transformScriptTags(); };
+    document.head.appendChild(s);
+  })();
+</script>
 <script>
 (function () {
   const C = window.PORTFOLIO_CONTENT;
