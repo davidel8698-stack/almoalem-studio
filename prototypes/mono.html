@@ -1253,7 +1253,6 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   color: #f0ebde;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--display);
-  cursor: none;
   --p: 0;
 }
 .loader.is-out { transform: translateY(-100%) !important; transition: transform 1.1s cubic-bezier(.7,0,.2,1); }
@@ -5025,7 +5024,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   <div class="contact-row">
     <div class="l">
       <p class="lede" data-i18n="contact.lede">I take on a small number of engagements each quarter. The earlier we talk, the better.</p>
-      <a class="btn-mail" href="mailto:hello@almoalem.studio">
+      <a class="btn-mail" href="mailto:hello@almoalem.studio" data-magnetic="0.32">
         <span><span data-i18n="contact.cta">Write to me</span> — hello@almoalem.studio</span>
         <span class="arr-box">↗</span>
       </a>
@@ -5096,6 +5095,14 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   <span class="c">Crafted by hand in Tel Aviv · 32.0853° N</span>
   <span class="r">Set in Geist + JetBrains Mono · <b>no analytics</b> · no cookies · plain html</span>
 </footer>
+
+<!-- ===================== HOVER PREVIEW ===================== -->
+<div class="ps-hover-preview" id="hover-pv">
+  <div class="ps-placeholder">
+    <div class="meta"><span id="hpv-num">01</span><span id="hpv-year">2026</span></div>
+    <div class="name" id="hpv-name">Project</div>
+  </div>
+</div>
 
 <!-- LAYER 3 — scroll progress + ascii clock -->
 <div class="scrollbar-line" id="scroll-line"></div>
@@ -5638,6 +5645,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
      CORE INITS
      ========================================================== */
   PS.initI18n("en");
+  PS.initMagnetic();
 
   /* ==========================================================
      LANGUAGE TOGGLE
@@ -5652,15 +5660,32 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   }));
 
   /* ==========================================================
-     WORK — horizontal scroll progress + arrow keys
-     (hover preview removed — cursor stays native)
+     WORK — hover preview + horizontal scroll progress + arrow keys
      ========================================================== */
+  const pv = document.getElementById("hover-pv");
   function bindWorkRows() {
     document.querySelectorAll(".proj-card").forEach((card) => {
+      card.addEventListener("mouseenter", () => {
+        const i = +card.dataset.idx;
+        const p = data().work.projects[i];
+        pv.style.setProperty("--tint", p.tint);
+        const hpvNum = document.getElementById('hpv-num');
+        const hpvYear = document.getElementById('hpv-year');
+        const hpvName = document.getElementById('hpv-name');
+        if (hpvNum)  hpvNum.textContent  = `// ${p.id}`;
+        if (hpvYear) hpvYear.textContent = p.year;
+        if (hpvName) hpvName.textContent = p.client;
+        pv.classList.add("is-on");
+      });
+      card.addEventListener("mouseleave", () => pv.classList.remove("is-on"));
       card.addEventListener("click", (e) => { e.preventDefault(); openDetail(+card.dataset.idx); });
     });
   }
   bindWorkRows();
+  document.addEventListener("mousemove", (e) => {
+    pv.style.left = e.clientX + "px";
+    pv.style.top  = e.clientY + "px";
+  });
 
   const scroller = document.getElementById("work-scroller");
   const progress = document.getElementById("work-progress");
@@ -6084,6 +6109,13 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     checkSection();
   });
   }
+
+  /* ==========================================================
+     LAYER 3 — Magnetic on more elements
+     ========================================================== */
+  document.querySelectorAll('.proj-card .arr').forEach(a => a.setAttribute('data-magnetic', '0.5'));
+  document.querySelectorAll('.nav .links a').forEach(a => a.setAttribute('data-magnetic', '0.18'));
+  PS.initMagnetic();
 
   /* ==========================================================
      LAYER 3 — ASCII clock — pulses through the day

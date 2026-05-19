@@ -41,6 +41,12 @@ body {
 }
 .ps-marquee-inner { padding-inline-end: 0; }
 
+/* --- Magnetic --- */
+[data-magnetic] {
+  transition: transform .5s cubic-bezier(.2,.7,.2,1);
+  will-change: transform;
+}
+
 /* --- Lang toggle pill — used by all three --- */
 .ps-lang-toggle {
   display: inline-flex;
@@ -97,3 +103,19 @@ body {
   pointer-events: none;
 }
 
+/* --- Floating preview shown when hovering project rows (Editorial + Mono) --- */
+.ps-hover-preview {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+  width: 380px;
+  height: 280px;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.92);
+  transition: opacity .35s, transform .55s cubic-bezier(.2,.7,.2,1);
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,.4);
+}
+.ps-hover-preview.is-on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.ps-hover-preview .ps-placeholder { width: 100%; height: 100%; padding: 22px; }

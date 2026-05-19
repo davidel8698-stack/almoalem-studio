@@ -41,6 +41,7 @@
 
 import { readFile, writeFile, mkdir, cp, rm, readdir, stat, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
@@ -366,6 +367,66 @@ async function phase0d_minify() {
     log(`minified ${t.path}: ${(src.length / 1024).toFixed(1)} → ${(out.code.length / 1024).toFixed(1)} KB (−${saved}%)`);
   }
   ok('CSS + JS minified');
+}
+
+// =============================================================
+// PHASE — content-hash cache-bust for /lib/* assets
+// -------------------------------------------------------------
+// /lib/* is shipped with `Cache-Control: immutable, max-age=1yr`,
+// but filenames don't change between builds. So browsers that
+// cached lib/main.js never refetch it — they hold the old bytes
+// for a year, even after a deploy. Fix: append ?v=<8-char-md5>
+// to every lib/* href/src in dist HTML. Same filename on disk
+// (Cloudflare still serves it), but the URL is different — so
+// the cache key is different, so the browser refetches.
+//
+// Runs AFTER phase0d_minify so hashes reflect final shipped bytes.
+// =============================================================
+async function phase_cacheBust() {
+  head('Phase — cache-bust /lib/* via content-hash');
+
+  const libFiles = [
+    'lib/main.js', 'lib/core.js', 'lib/content.js', 'lib/content-loader.js',
+    'lib/core.css', 'lib/site.css', 'lib/fonts-self-hosted.css',
+  ];
+  const versions = {};
+  for (const f of libFiles) {
+    const p = join(DIST, f);
+    if (!existsSync(p)) continue;
+    const c = await readFile(p);
+    versions[f] = createHash('md5').update(c).digest('hex').slice(0, 8);
+  }
+
+  async function walk(dir, files = []) {
+    for (const ent of await readdir(dir, { withFileTypes: true })) {
+      const p = join(dir, ent.name);
+      if (ent.isDirectory()) await walk(p, files);
+      else if (ent.name.endsWith('.html')) files.push(p);
+    }
+    return files;
+  }
+  const htmlFiles = await walk(DIST);
+
+  let totalRewrites = 0;
+  for (const htmlPath of htmlFiles) {
+    let html = await readFile(htmlPath, 'utf8');
+    for (const [f, v] of Object.entries(versions)) {
+      const base = f.split('/').pop().replace(/\./g, '\\.');
+      // Match attr="…lib/<file>" with NO existing query string. The
+      // negative lookahead (?!\?) prevents double-stamping if a build
+      // is re-run against already-stamped HTML.
+      const re = new RegExp(
+        `(["'])((?:\\.\\.\\/)?lib\\/${base})(?!\\?)\\1`,
+        'g'
+      );
+      html = html.replace(re, (match, quote, path) => {
+        totalRewrites++;
+        return `${quote}${path}?v=${v}${quote}`;
+      });
+    }
+    await writeFile(htmlPath, html, 'utf8');
+  }
+  ok(`cache-bust appended to ${totalRewrites} reference(s) across ${htmlFiles.length} HTML file(s)`);
 }
 
 // =============================================================
@@ -1129,6 +1190,11 @@ async function main() {
   // a readable, pattern-matchable source (phase4's selector-expansion
   // string-replace would fail against minified CSS).
   if (PHASE >= 0) await phase0d_minify();
+  // Cache-bust — runs LAST so hashes reflect the final minified bytes
+  // shipped to the browser. Adds ?v=<8-char-md5> to every /lib/* href
+  // and src in every HTML file. Forces immutable-cached browsers to
+  // refetch when content changes (filenames don't change between builds).
+  if (PHASE >= 0) await phase_cacheBust();
 
   console.log('\n── Build complete.\n');
 }
