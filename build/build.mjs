@@ -315,6 +315,108 @@ async function phase0c_compileJsx() {
   ok(`dist/index.html JSX-free (${before.toLocaleString()} → ${html.length.toLocaleString()} chars)`);
 }
 
+// =============================================================
+// PHASE 0e — strip dev-only React UMD + tweaks-panel from prod
+// -------------------------------------------------------------
+// tweaks-panel.jsx is a dev tooling panel that only activates on
+// localhost / ?debug=1. It depends on React + ReactDOM (UMD from
+// unpkg.com — combined ~47 KB transfer, ~143 KB unpacked).
+//
+// In production neither the panel nor React are ever instantiated,
+// but the <script> tags still ship and the browser still fetches +
+// parses both UMDs. Lighthouse 2026-05-19 flagged 23 KB unused
+// react-dom (53.7%) and gave 270 ms script parse/compile time to
+// these never-used scripts.
+//
+// This phase removes:
+//   • <script src="…unpkg.com/react…"> + react-dom (2 tags)
+//   • <script src="tweaks-panel.js" …> + <div id="tweaks-root">
+//   • <script src="…babel.min.js…"> (defensive — the Babel gate
+//     in phase0c usually catches this, but stripping the URL too
+//     defends against future template drift)
+//   • dist/tweaks-panel.js and dist/design-canvas.js (unlinked)
+//
+// Runs AFTER phase0c (JSX is compiled to plain JS, the runtime
+// no longer needs React.createElement to resolve) and BEFORE
+// phase7_extractInlineJs so the extracted main.js doesn't have
+// to handle the React-script-removal as a string patch.
+// =============================================================
+async function phase0e_stripDevDeps() {
+  head('Phase 0e — strip React UMD + tweaks-panel (dev-only, never used in prod)');
+
+  const indexFiles = ['index.html', 'he/index.html'];
+  let totalRemovedLines = 0;
+  for (const rel of indexFiles) {
+    const p = join(DIST, rel);
+    if (!existsSync(p)) continue;
+    let html = await readFile(p, 'utf8');
+    const before = html.length;
+
+    // Remove the surrounding HTML comment block that documents these scripts,
+    // so the resulting <head> stays clean. Conservative match — only the
+    // exact "React/ReactDOM: production-min UMD" comment that wraps the tags.
+    html = html.replace(
+      /<!--\s*React\/ReactDOM:[\s\S]*?-->\s*\n?/g,
+      ''
+    );
+
+    // <script src="…unpkg.com/react…"> and <script src="…unpkg.com/react-dom…">
+    html = html.replace(
+      /<script[^>]*\bsrc="https?:\/\/unpkg\.com\/react(?:-dom)?@[^"]*"[^>]*><\/script>\s*\n?/g,
+      ''
+    );
+
+    // <script src="https://unpkg.com/@babel/standalone@…"> (defensive)
+    html = html.replace(
+      /<script[^>]*\bsrc="https?:\/\/unpkg\.com\/@babel\/standalone@[^"]*"[^>]*><\/script>\s*\n?/g,
+      ''
+    );
+
+    // Comment block describing the dev-only tweaks-panel.jsx gate (preceding
+    // the tweaks-panel script tag in the source).
+    html = html.replace(
+      /<!--\s*tweaks-panel\.jsx is dev-only tooling[\s\S]*?-->\s*\n?/g,
+      ''
+    );
+
+    // <script src="tweaks-panel.js" …> + <script src="design-canvas.js" …>.
+    // We only match local refs (no scheme) to avoid touching unrelated CDN
+    // scripts that might happen to share the basename.
+    html = html.replace(
+      /<script[^>]*\bsrc="(?:tweaks-panel|design-canvas)\.js"[^>]*><\/script>\s*\n?/g,
+      ''
+    );
+
+    // The empty React root that tweaks-panel would have mounted into.
+    html = html.replace(
+      /<div\s+id="tweaks-root">\s*<\/div>\s*\n?/g,
+      ''
+    );
+
+    if (html.length !== before) {
+      await writeFile(p, html, 'utf8');
+      const removedLines = (before - html.length);
+      totalRemovedLines += removedLines;
+      log(`${rel}: stripped ${removedLines.toLocaleString()} bytes of dev-only script refs`);
+    } else {
+      log(`${rel}: no dev-only refs found (already stripped?)`);
+    }
+  }
+
+  // Physically delete the JS files so even a stray <link rel="preload"> or
+  // direct URL fetch returns 404. Cache-bust phase already ran on the HTML,
+  // but the artifacts on disk are now orphaned.
+  for (const f of ['tweaks-panel.js', 'design-canvas.js']) {
+    const p = join(DIST, f);
+    if (existsSync(p)) {
+      await unlink(p);
+      log(`unlinked dist/${f}`);
+    }
+  }
+
+  ok(`React + tweaks-panel removed from production (total: ${totalRemovedLines.toLocaleString()} bytes from HTML + 2 JS files)`);
+}
+
 // Small async replace helper — String.replace doesn't await async callbacks.
 async function replaceAsync(str, regex, asyncFn) {
   const promises = [];
@@ -1164,6 +1266,11 @@ async function main() {
   if (PHASE >= 0) {
     await phase0();
     await phase0c_compileJsx();
+    // Phase 0e — strip React UMD + tweaks-panel before any downstream phase
+    // touches the HTML, so JSON-LD, prerendering, JS extraction, etc. all
+    // operate on the slimmed-down production index. Must run after 0c (which
+    // turns the JSX into plain JS that no longer needs React in scope).
+    await phase0e_stripDevDeps();
   }
   if (PHASE >= 1) {
     await phase1();

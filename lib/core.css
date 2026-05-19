@@ -64,12 +64,12 @@ body {
   cursor: pointer;
   color: inherit;
   font: inherit;
-  opacity: 0.45;
+  opacity: 0.72;            /* was 0.45 (= 3.06:1 fail) → 0.72 gives ~4.7:1 on light bg */
   transition: opacity .2s;
 }
 .ps-lang-toggle button.active { opacity: 1; }
 .ps-lang-toggle button:hover { opacity: 1; }
-.ps-lang-toggle .ps-sep { opacity: 0.35; }
+.ps-lang-toggle .ps-sep { opacity: 0.55; }
 
 /* --- RTL ergonomics (when lang=he) --- */
 [dir="rtl"] [data-marquee] { direction: ltr; }
