@@ -4806,7 +4806,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   </div>
 </nav>
 
-<!-- LAYER 23 — mobile section dots + persistent context bar -->
+<!-- LAYER 23 — mobile section dots -->
 <div class="mobile-dots" id="mobile-dots" aria-hidden="true">
   <span class="dot-pip is-current" data-target="top"></span>
   <span class="dot-pip" data-target="work"></span>
@@ -4818,10 +4818,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   <span class="dot-pip" data-target="play"></span>
   <span class="dot-pip" data-target="journal"></span>
   <span class="dot-pip" data-target="contact"></span>
-</div>
-<div class="sec-context" id="sec-context" aria-hidden="true">
-  <span><b id="sx-no">01</b> · <span id="sx-name">Selected Work</span></span>
-  <span class="pg"><span id="sx-cur">01</span>/<span id="sx-tot">10</span></span>
 </div>
 
 <!-- LAYER 22 — mobile menu (clipped circle reveal) -->
@@ -4841,20 +4837,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     <span>Tel Aviv · GMT+3</span>
     <span><a href="mailto:hello@almoalem.studio">hello@almoalem.studio</a></span>
   </div>
-</div>
-
-<!-- ===================== SIDE RAIL ===================== -->
-<div class="rail" id="rail">
-  <a class="ri" href="#top" data-target="top"><span class="bar"></span>00 / Index</a>
-  <a class="ri" href="#work" data-target="work"><span class="bar"></span>01 / Work</a>
-  <a class="ri" href="#about" data-target="about"><span class="bar"></span>02 / About</a>
-  <a class="ri" href="#approach" data-target="approach"><span class="bar"></span>03 / Approach</a>
-  <a class="ri" href="#process" data-target="process"><span class="bar"></span>04 / Process</a>
-  <a class="ri" href="#tests" data-target="tests"><span class="bar"></span>05 / Words</a>
-  <a class="ri" href="#awards" data-target="awards"><span class="bar"></span>06 / Press</a>
-  <a class="ri" href="#play" data-target="play"><span class="bar"></span>07 / Play</a>
-  <a class="ri" href="#journal" data-target="journal"><span class="bar"></span>08 / Journal</a>
-  <a class="ri" href="#contact" data-target="contact"><span class="bar"></span>09 / Contact</a>
 </div>
 
 <!-- ===================== MAIN ======================
@@ -5753,25 +5735,12 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   });
 
   /* ==========================================================
-     NAV — scrolled state + side rail current section
+     NAV — scrolled state
      ========================================================== */
   const nav = document.getElementById("nav");
-  const rail = document.getElementById("rail");
-  const sections = ["top","work","about","approach","process","tests","awards","play","journal","contact"];
-  const sectionEls = sections.map(id => document.getElementById(id)).filter(Boolean);
 
   function updateChrome() {
-    const y = window.scrollY;
-    nav.classList.toggle("scrolled", y > 40);
-    // find current section
-    let curr = "top";
-    for (const el of sectionEls) {
-      const r = el.getBoundingClientRect();
-      if (r.top <= 140) curr = el.id;
-    }
-    rail.querySelectorAll(".ri").forEach(ri => {
-      ri.classList.toggle("is-current", ri.dataset.target === curr);
-    });
+    nav.classList.toggle("scrolled", window.scrollY > 40);
   }
   updateChrome();
   window.addEventListener("scroll", updateChrome, { passive: true });
@@ -6007,7 +5976,6 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     loader.classList.add("is-skipped");
     document.body.classList.remove("loading");
     document.getElementById('nav').style.opacity = '1';
-    document.getElementById('rail').style.opacity = '1';
     // Defer the post-loader work one frame so layout can settle.
     requestAnimationFrame(() => {
       runHeroFontIntro();
@@ -6037,9 +6005,8 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     setTimeout(() => {
       loader.classList.add("is-out");
       document.body.classList.remove("loading");
-      // Force nav/rail to visible (transitions may be throttled in offscreen iframes)
+      // Force nav to visible (transitions may be throttled in offscreen iframes)
       document.getElementById('nav').style.opacity = '1';
-      document.getElementById('rail').style.opacity = '1';
       runHeroFontIntro();
       observeStats();
       try { sessionStorage.setItem("almoalem:seenLoader", "1"); } catch (_) {}
@@ -6841,7 +6808,6 @@ const { useState, useEffect } = React;
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#c14b27",
   "accent2": "#e2683e",
-  "showRail": true,
   "showCurrently": true,
   "showBgGrid": false,
   "headlineStyle": "slash",
@@ -6855,8 +6821,6 @@ function TweaksApp() {
     // apply accents
     document.documentElement.style.setProperty('--accent', t.accent);
     document.documentElement.style.setProperty('--accent-2', t.accent2);
-    // rail
-    document.getElementById('rail').style.display = t.showRail ? 'flex' : 'none';
     // currently board
     const cur = document.querySelector('.currently');
     if (cur) cur.style.display = t.showCurrently ? 'grid' : 'none';
@@ -6881,11 +6845,6 @@ function TweaksApp() {
       </TweakSection>
 
       <TweakSection title="Chrome">
-        <TweakToggle
-          label="Side section rail"
-          value={t.showRail}
-          onChange={(v) => setTweak('showRail', v)}
-        />
         <TweakToggle
           label='"Currently" board in hero'
           value={t.showCurrently}
