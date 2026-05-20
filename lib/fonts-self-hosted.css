@@ -52,6 +52,39 @@
        url("fonts/JetBrainsMono-Italic-VariableFont_wght.woff2") format("woff2");
 }
 
+/* ---- JetBrains Mono Italic Fallback — metric-matched to Courier ----
+   The hero h1 .ital span ("considered") is the LCP element and carries the
+   only italic mono text on first paint. Without a metric-matched fallback,
+   the swap from Courier/system → JetBrains Mono Italic shifts the word's
+   bounding-box width by ~10% and Lighthouse attributes 0.054 CLS to it.
+
+   JetBrains Mono metrics (from fontkit):
+     unitsPerEm 1000, typoAscent 1020, typoDescent 300, lineGap 0.
+   Courier New italic on macOS/Windows is ~5% narrower per glyph at the
+   same em size — size-adjust pushes it out to match. Values are
+   approximations; fine-tune with https://katiehempenius.com/font-metric-overrides
+   if a residual swap shift remains. */
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: italic;
+  font-weight: 100 800;
+  src: local("Courier New Italic"), local("Courier Italic"), local("Cousine Italic");
+  size-adjust: 105%;
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: normal;
+  font-weight: 100 800;
+  src: local("Courier New"), local("Courier"), local("Cousine");
+  size-adjust: 105%;
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+}
+
 /* ---- Geist — variable, wght 100–900 ---- */
 @font-face {
   font-family: "Geist";

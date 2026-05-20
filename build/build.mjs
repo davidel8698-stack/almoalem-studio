@@ -1155,27 +1155,36 @@ async function phase8_purgeCss() {
     // rules like `.is-open` (added programmatically when the panel
     // opens) even though they're in active use.
     safelist: {
+      // State classes added programmatically — these literal strings appear
+      // in classList.add/remove/toggle calls and PurgeCSS sees them in JS,
+      // but listing them explicitly here defends against renames or string
+      // concatenation we may miss.
       standard: [
         'open', 'loading', 'menu-open', 'clone-occupies',
-        'in', 'out', 'on', 'off', 'active', 'current',
-        'sr-only', 'visually-hidden', 'noscript',
-        'is-flip', 'is-open', 'is-in', 'is-current', 'is-on',
-        'is-down', 'is-transitioning', 'is-grown', 'is-static',
-        'is-ready', 'is-active', 'is-hidden',
-        'has-open', 'has-detail-open',
+        'active', 'current',
+        'sr-only', 'visually-hidden',
         'inert', 'xray',
       ],
-      // Match anything that starts with a known dynamic prefix.
+      // Conservative prefix matchers. Every other "dynamic" class (.aw-foo,
+      // .pg-bar, .svc-baz, .j-x, .d-y, .p-z, .cur-w, .ftr-q, .msg-r) is
+      // written into the DOM by lib/main.js — PurgeCSS scans that file as
+      // part of `content`, so those classes are detected automatically.
+      // Broad patterns like /^d-/ or /^p-/ were preserving 60 KiB of dead
+      // CSS (2026-05-19 Lighthouse: unused-css-rules 59% / 60 KiB).
       deep: [
-        /^is-/, /^has-/, /^ps-/, /^mood-/, /^xray-/, /^lang-/,
-        /^ask-/, /^d-/, /^aw-/, /^ct-/, /^j-/, /^proc-/, /^svc-/,
-        /^pg-/, /^p-/, /^cur-/, /^ftr-/, /^msg-/,
-        /^data-mood/, /^data-lang/, /^data-screen/, /^data-bg/,
-        /^data-cursor/, /^data-magnetic/, /^data-marquee/, /^data-reveal/,
+        /^is-/,           // state classes added by classList.toggle('is-…')
+        /^has-/,          // :has() polyfill style classes
+        /^ps-/,           // shared lib/core.js primitives (ps-marquee, ps-cursor, ps-curtain, ps-lang-toggle)
+        /^mood-/,         // body[data-mood] alt styles
+        /^proj-/,         // proj-card sub-classes assembled in JS strings
       ],
-      // Preserve any rule that contains `[data-…]` attribute selectors —
-      // the values are runtime-set and PurgeCSS can't statically resolve them.
-      greedy: [/\[data-mood/, /\[data-lang/, /\[data-screen/],
+      // Preserve any rule that contains [data-…] attribute selectors — the
+      // values are runtime-set and PurgeCSS can't statically resolve them.
+      greedy: [
+        /\[data-mood/, /\[data-lang/, /\[data-screen/,
+        /\[data-cursor/, /\[data-direction/, /\[data-live/,
+        /\[data-bg/, /\[dir=/,
+      ],
     },
     fontFace: false,
     keyframes: false,

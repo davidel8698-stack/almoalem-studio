@@ -80,6 +80,10 @@
      ============================================================ -->
 <link rel="preload" as="font" type="font/woff2" href="../lib/fonts/MonaSans-VariableFont_wdth_wght.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="../lib/fonts/Geist-VariableFont_wght.woff2" crossorigin>
+<!-- JetBrainsMono-Italic carries the .ital LCP word ("considered") in the hero h1.
+     Without preload it sits at the end of a 1.2s critical chain (HTML → fonts-self-hosted.css → font).
+     Preloading drops LCP ~300-500ms and removes the .ital font-swap CLS (~0.054). -->
+<link rel="preload" as="font" type="font/woff2" href="../lib/fonts/JetBrainsMono-Italic-VariableFont_wght.woff2" crossorigin>
 <link rel="stylesheet" href="../lib/fonts-self-hosted.css">
 <link rel="stylesheet" href="../lib/core.css">
 
@@ -311,7 +315,7 @@
   --sage:         #5c8d68;        /* "available" green */
 
   /* type */
-  --mono:    "JetBrains Mono", ui-monospace, monospace;
+  --mono:    "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   --sans:    "Geist", system-ui, sans-serif;
   --display: "Mona Sans", "Mona Sans Fallback", "Geist", system-ui, sans-serif;
   /* live tunables for variable font play */
@@ -404,14 +408,14 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   border-radius: 3px;
   font: 700 11px/1 var(--mono);
 }
-.nav .brand .role { color: var(--ink-3); font-weight: 400; }
+.nav .brand .role { color: var(--ink-3-onlight); font-weight: 400; } /* solid 5.2:1+ on cream — was --ink-3 rgba 2.81:1 */
 .nav .links { justify-self: center; display: flex; gap: 28px; }
 .nav .links a {
   position: relative; padding: 4px 0;
   text-transform: uppercase;
   transition: color .18s;
 }
-.nav .links a .num { color: var(--ink-3); margin-inline-end: 6px; font-weight: 400; }
+.nav .links a .num { color: var(--ink-3-onlight); margin-inline-end: 6px; font-weight: 400; } /* AA on cream */
 .nav .links a::after {
   content: "";
   position: absolute; inset: auto 0 0 0;
@@ -491,7 +495,7 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   .hero { padding-inline-end: var(--pad-x); }
 }
 .hero-meta .a { color: var(--ink-2); }
-.hero-meta .b { text-align: center; color: var(--ink-3); }
+.hero-meta .b { text-align: center; color: var(--ink-3-onlight); } /* AA on cream — was --ink-3 2.81:1 */
 .hero-meta .c { text-align: end; color: var(--ink-2); }
 .hero-meta .b b { color: var(--ink); font-weight: 600; }
 
@@ -551,10 +555,10 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   display: grid; gap: 6px;
   font-family: var(--mono);
 }
-.crd .k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
+.crd .k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3-onlight); display: inline-flex; align-items: center; gap: 6px; } /* AA on .crd cream — was --ink-3 2.84:1 */
 .crd .v { font-size: 13px; color: var(--ink); font-feature-settings: normal; line-height: 1.35; }
 .crd .v b { font-family: var(--sans); font-weight: 500; font-size: 14px; }
-.crd .v .sub { color: var(--ink-3); }
+.crd .v .sub { color: var(--ink-3-onlight); } /* AA on .crd cream — was --ink-3 2.84:1 */
 .crd.wide { grid-column: span 2; }
 .crd::after {
   content: "";
@@ -1697,7 +1701,7 @@ body.loading .scrollbar-line { opacity: 0; }
   pointer-events: none;
 }
 .ascii-clock .a { display: block; }
-.ascii-clock b { color: var(--accent-2-ondark); font-weight: 600; } /* 4.5:1+ on #0c0c09 */
+.ascii-clock b { color: #f08858; font-weight: 600; } /* hard-coded --accent-2-ondark — JS dynamically retunes --accent-2 per-project, which leaked the dimmer #e2683e here (LH 3.31:1); solid #f08858 is ~5.4:1 on #0c0c09 */
 @media (max-width: 1100px) { .ascii-clock { display: none; } }
 
 /* --- Magnetic on more elements --- */
@@ -2044,20 +2048,24 @@ body:not(.loading) .currently .crd { opacity: 1; transform: none; }
   padding: 24px var(--pad-x) 0;
   /* Pin a dark surface directly on .colophon so axe/Lighthouse never walks up
      past it to detect a light body bg as the effective background. Fixes the
-     1.08:1 false-positive the 2026-05-19 audit raised on .colophon span.k. */
+     1.08:1 false-positive the 2026-05-19 audit raised on .colophon span.k.
+     2026-05-19: pin bg on grid cells too — Lighthouse 13.0.2 still walked
+     past .colophon and reported the body cream bg. Solid bg on every cell
+     makes the composite unambiguous. */
   background: #0c0c09;
-  border-top: 1px solid rgba(240,235,222,0.18);
+  border-top: 1px solid #2a2723;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   font: 500 11px/1.5 var(--mono);
   letter-spacing: 0.04em;
-  color: rgba(240,235,222,0.82); /* ~5.2:1 on #0c0c09 — AA */
+  color: #ebe4ce; /* solid AA on #0c0c09 (~12:1) — was rgba(240,235,222,0.82) which LH composited wrong */
   text-transform: uppercase;
 }
-.colophon .k { color: rgba(240,235,222,0.78); display: block; margin-bottom: 6px; font-size: 10px; } /* was 9px,0.35 → unreadable */
+.colophon > div { background: #0c0c09; }                         /* pin bg on direct children so LH cannot walk up to body cream */
+.colophon .k { color: #c8c1ac; display: block; margin-bottom: 6px; font-size: 10px; } /* solid 8.9:1 on #0c0c09 — was rgba 0.78 (~5:1 but LH false-positive 1.13) */
 .colophon .v { color: #f0ebde; font-size: 13px; font-weight: 500; letter-spacing: 0; }
-.colophon .v b { color: var(--accent-2-ondark); font-weight: 600; } /* AA on dark */
+.colophon .v b { color: #f08858; font-weight: 600; }             /* solid --accent-2-ondark value, hard-coded so dynamic --accent-2 JS overrides can't dilute it (~5.4:1 on #0c0c09) */
 @media (max-width:900px) { .colophon { grid-template-columns: 1fr 1fr; } }
 
 /* ============================================================
@@ -2560,7 +2568,7 @@ body.xray .now-viewing { opacity: 0; }
   font: 500 12px/1.3 var(--mono);
   text-transform: uppercase; letter-spacing: 0.06em;
 }
-.d-quote-by .role { color: var(--ink-3); }
+.d-quote-by .role { color: var(--ink-3-onlight); } /* AA on cream */
 
 .d-meta-grid {
   margin: 70px var(--pad-x) 60px;
@@ -2747,8 +2755,8 @@ body:not(.loading) .page-num { opacity: 1; transition-delay: .3s; }
 .now-viewing.is-on ~ .page-num,
 body:has(.now-viewing.is-on) .page-num { opacity: 0; }
 .page-num .pp { font-variant-numeric: tabular-nums; }
-.page-num .pp b { color: var(--accent-2-ondark); font-weight: 600; } /* 4.5:1+ on #0c0c09 */
-.page-num .lbl { color: rgba(240,235,222,0.82); font-size: 9px; letter-spacing: 0.1em; } /* ~5.2:1 on #0c0c09 */
+.page-num .pp b { color: #f08858; font-weight: 600; } /* hard-coded --accent-2-ondark (~5.4:1 on #0c0c09) — was --accent-2-ondark var which JS-overridden --accent-2 polluted to 3.31:1 */
+.page-num .lbl { color: #ebe4ce; font-size: 9px; letter-spacing: 0.1em; } /* solid ~12:1 on #0c0c09 — was rgba(240,235,222,0.82) which LH composited at 4.03:1 */
 body.xray .page-num { mix-blend-mode: normal; color: var(--accent); }
 @media (max-width: 700px) { .page-num { display: none; } }
 
@@ -4766,7 +4774,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
 </div>
 
 <!-- ===================== NAV ===================== -->
-<nav class="nav" id="nav">
+<nav class="nav" id="nav" aria-label="Primary">
   <a href="#top" class="brand">
     <span class="mark mono" aria-hidden="true">
       <svg viewBox="0 0 100 100">
@@ -4789,10 +4797,10 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   </div>
   <div class="right">
     <span class="avail"><span class="dot sage"></span><span data-i18n="availability">Booking Q3 · 2026</span></span>
-    <span class="ps-lang-toggle">
-      <button class="lang-en active" data-lang="en">EN</button>
-      <span class="ps-sep">/</span>
-      <button class="lang-he" data-lang="he">עב</button>
+    <span class="ps-lang-toggle" role="group" aria-label="Language">
+      <button class="lang-en active" data-lang="en" aria-label="English" aria-pressed="true">EN</button>
+      <span class="ps-sep" aria-hidden="true">/</span>
+      <button class="lang-he" data-lang="he" aria-label="עברית" aria-pressed="false">עב</button>
     </span>
     <button class="mobile-menu-btn" id="menu-btn" aria-label="Menu"><span>Menu</span><span class="bars"></span></button>
   </div>
@@ -4818,7 +4826,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
 
 <!-- LAYER 22 — mobile menu (clipped circle reveal) -->
 <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-  <nav>
+  <nav aria-label="Mobile">
     <a href="#work"     style="--i:0"><span class="num">01</span><span>Work</span><span class="arr">↗</span></a>
     <a href="#about"    style="--i:1"><span class="num">02</span><span>About</span><span class="arr">↗</span></a>
     <a href="#approach" style="--i:2"><span class="num">03</span><span>Approach</span><span class="arr">↗</span></a>
@@ -5873,18 +5881,17 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     document.body.classList.add('is-transitioning');
     const card = document.querySelector(`.proj-card[data-idx="${i}"]`);
     const img = card.querySelector('.img');
+    // READ batch 1 — capture source rect before any style writes
     const startR = img.getBoundingClientRect();
 
-    // Build a clone of the project image, positioned exactly over the source
+    // WRITE batch 1 — build clone + open detail. cssText keeps the writes in
+    // one style-invalidation pass instead of seven separate property setters.
     const clone = document.createElement('div');
     clone.className = 'share-clone';
-    clone.style.setProperty('--ptint', p.tint);
-    clone.style.background = p.tint;
-    clone.style.left = '0px';
-    clone.style.top = '0px';
-    clone.style.width = startR.width + 'px';
-    clone.style.height = startR.height + 'px';
-    clone.style.transform = `translate3d(${startR.left}px, ${startR.top}px, 0)`;
+    clone.style.cssText =
+      `--ptint:${p.tint};background:${p.tint};left:0;top:0;` +
+      `width:${startR.width}px;height:${startR.height}px;` +
+      `transform:translate3d(${startR.left}px,${startR.top}px,0)`;
     clone.innerHTML = `<span class="num">${p.id}</span><span class="name">${p.client}</span>`;
     document.body.appendChild(clone);
 
@@ -5893,15 +5900,20 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     detail.removeAttribute('inert');
     detail.scrollTop = 0;
 
-    // After a short beat (let layout settle), grow the clone toward d-cover
-    setTimeout(() => {
-      const cover = document.getElementById('d-cover');
-      const targetR = cover.getBoundingClientRect();
-      clone.style.transform = `translate3d(${targetR.left}px, ${targetR.top}px, 0)`;
-      clone.style.width = targetR.width + 'px';
-      clone.style.height = targetR.height + 'px';
-      clone.classList.add('is-grown');
-    }, 60);
+    // Wait two rAFs so the browser commits layout before the second READ —
+    // prevents the second getBoundingClientRect() from forcing a sync reflow
+    // (it was the ~25ms forced reflow Lighthouse flagged at lib/main.js:69).
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const cover = document.getElementById('d-cover');
+        const targetR = cover.getBoundingClientRect();
+        // WRITE batch 2 — same cssText approach
+        clone.style.cssText +=
+          `;width:${targetR.width}px;height:${targetR.height}px;` +
+          `transform:translate3d(${targetR.left}px,${targetR.top}px,0)`;
+        clone.classList.add('is-grown');
+      });
+    });
 
     // After morph, fade out clone
     setTimeout(() => {
@@ -6354,8 +6366,21 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   const MIN_WDTH = 76, MAX_WDTH = 110;
   const MIN_WGHT = 600,  MAX_WGHT = 760;
 
+  // Dirty-bit gating: skip the loop when the mouse hasn't moved AND we already
+  // settled to a resting state. Without this, charTypeLoop fires every rAF
+  // and triggers ~280 style invalidations per frame even on a still page —
+  // Lighthouse "Style & Layout" main-thread cost was 2.5s, largely from this.
+  let lastMx = -2, lastMy = -2, idleFrames = 0;
   function charTypeLoop() {
-    if (mx5 >= 0 && charRects.length) {
+    const moved = (mx5 !== lastMx || my5 !== lastMy);
+    if (moved) {
+      lastMx = mx5; lastMy = my5; idleFrames = 0;
+    } else {
+      idleFrames++;
+    }
+    // Render for ~6 frames after the last mouse move so the easing settles
+    // visually, then go quiet until the mouse stirs again.
+    if ((moved || idleFrames < 6) && mx5 >= 0 && charRects.length) {
       for (const { el, cx, cy } of charRects) {
         const d = Math.hypot(cx - mx5, cy - my5);
         const p = Math.max(0, 1 - d / RADIUS); // 0..1
@@ -6367,8 +6392,14 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     }
     requestAnimationFrame(charTypeLoop);
   }
-  // start after a beat so hero entrance settles first
-  setTimeout(() => requestAnimationFrame(charTypeLoop), 1800);
+  // Start after the LCP and any initial paint settle. requestIdleCallback
+  // lets the browser pick the moment; falls back to setTimeout where unsupported.
+  const startCharLoop = () => requestAnimationFrame(charTypeLoop);
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(startCharLoop, { timeout: 2400 });
+  } else {
+    setTimeout(startCharLoop, 1800);
+  }
 
   /* ==========================================================
      LAYER 6 — ACCENT COLOR SHIFTS AS USER SCROLLS THROUGH WORK

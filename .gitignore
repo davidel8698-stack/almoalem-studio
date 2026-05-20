@@ -44,8 +44,9 @@ desktop.ini
 
 # Lighthouse / PageSpeed audit reports — working artifacts, not site content.
 *.pages.dev_*.json
-almoalem.studio_*.json
+almoalem.studio*.json
 lighthouse-*.json
 
-# Per-project Claude Code settings — local agent config, not site code.
+# Per-project Claude Code / APEX agent state — local agent config, not site code.
 .claude/
+.apex/
