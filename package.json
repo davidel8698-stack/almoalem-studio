@@ -6,11 +6,13 @@
   "description": "almoalem.studio — independent designer/developer portfolio. Pure-Node static-site build with esbuild for JSX/CSS/JS optimization.",
   "scripts": {
     "build": "node build/build.mjs",
-    "build:clean": "node build/build.mjs --clean"
+    "build:clean": "node build/build.mjs --clean",
+    "fonts:subset": "node build/fonts-subset.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
-    "purgecss": "^6.0.0"
+    "purgecss": "^6.0.0",
+    "subset-font": "^2.5.0"
   },
   "engines": {
     "node": ">=18"

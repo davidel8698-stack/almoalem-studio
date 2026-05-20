@@ -274,11 +274,24 @@ async function phase0c_compileJsx() {
     return `__BUILD_COMMENT_${commentSlots.length - 1}__`;
   });
 
-  // Inline <script type="text/babel">…</script> → compiled inline <script>
+  // Inline <script type="text/babel">…</script> → compiled inline <script>.
+  //
+  // A babel block that references React / ReactDOM / the "tweaks-root"
+  // mount node is the dev-only TweaksApp panel — it is never used in
+  // production. Drop it HERE, at the source stage, before compilation:
+  // production ships no React UMD, so a compiled React block folded into
+  // lib/main.js by phase 7 throws "React is not defined" at runtime
+  // (Lighthouse Best-Practices regression). Stripping pre-compile means
+  // no compiled React code can exist downstream. Phase 0e (tag cleanup)
+  // and phase 7b (build assertion) are the secondary nets.
   html = await replaceAsync(
     html,
     /<script\s+type="text\/babel">([\s\S]*?)<\/script>/g,
     async (_match, body) => {
+      if (/\bReactDOM?\b|tweaks-root/.test(body)) {
+        log('dropped dev-only React/babel block (TweaksApp — not shipped to production)');
+        return '';
+      }
       const out = await esbuild.transform(body, {
         loader: 'jsx',
         jsx: 'transform',
@@ -1139,6 +1152,38 @@ async function phase7_extractInlineJs() {
 }
 
 // =============================================================
+// PHASE 7b — assert lib/main.js carries no React dependency
+// -------------------------------------------------------------
+// Production ships no React UMD. If a dev-only React/JSX block ever
+// leaks past phase 0c/0e into the extracted lib/main.js, the page
+// throws "React is not defined" at runtime — a silent regression that
+// only surfaces in a Lighthouse Best-Practices audit. This phase turns
+// that into a loud, immediate build failure.
+//
+// It looks for compiled-JSX *call signatures* (React.createElement /
+// React.Fragment from esbuild's jsxFactory, and ReactDOM.createRoot /
+// .render). Those patterns never occur inside portfolio data strings
+// or AI-prompt prose — where the bare word "React" legitimately
+// appears — so no fragile string-stripping is needed.
+// =============================================================
+async function phase7b_assertNoReact() {
+  head('Phase 7b — assert lib/main.js is React-free');
+  const p = join(DIST, 'lib/main.js');
+  if (!existsSync(p)) { log('lib/main.js missing — skip'); return; }
+  const code = await readFile(p, 'utf8');
+  const danger = /React\s*\.\s*(?:createElement|Fragment)|ReactDOM\s*\.\s*(?:createRoot|render)/;
+  const m = code.match(danger);
+  if (m) {
+    throw new Error(
+      `BUILD FAILED: \`${m[0]}\` survived into dist/lib/main.js. ` +
+      `Production ships no React UMD — this throws "React is not defined" ` +
+      `at runtime. A dev-only React/JSX block escaped build.mjs phase 0c/0e.`
+    );
+  }
+  ok('lib/main.js is React-free (no compiled-JSX call signatures)');
+}
+
+// =============================================================
 // PHASE 8 — PurgeCSS on lib/site.css
 // -------------------------------------------------------------
 // Lighthouse flagged ~94 KB of unused CSS in lib/site.css
@@ -1238,6 +1283,21 @@ async function phase9_criticalCss() {
   const lastBrace = critical.lastIndexOf('}');
   if (lastBrace > 0) critical = critical.slice(0, lastBrace + 1);
 
+  // Render-blocking CSS folded into the inlined critical block:
+  //   • core.css            — shared visual primitives (~3 KB)
+  //   • fonts-self-hosted.css — the @font-face declarations (~4 KB)
+  // Both currently ship as <link rel="stylesheet"> tags that block the
+  // first paint and add a network round-trip to the critical chain
+  // (HTML → fonts-self-hosted.css → woff2). Inlining removes 2 render-
+  // blocking requests and lets the font fetch begin as soon as the
+  // <head> is parsed.
+  const stripComments = (s) =>
+    s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n{2,}/g, '\n').trim();
+  const coreCssPath  = join(DIST, 'lib/core.css');
+  const fontsCssPath = join(DIST, 'lib/fonts-self-hosted.css');
+  const coreCss     = existsSync(coreCssPath)  ? stripComments(await readFile(coreCssPath, 'utf8'))  : '';
+  const fontsCssRaw = existsSync(fontsCssPath) ? stripComments(await readFile(fontsCssPath, 'utf8')) : '';
+
   // Patch every HTML file that links lib/site.css.
   const allFiles = await walk(DIST);
   let patched = 0;
@@ -1250,15 +1310,46 @@ async function phase9_criticalCss() {
     const m = html.match(linkRe);
     if (!m) continue;
     const href = m[1];
+    // Depth prefix for this page ('' | '../' | '../../' …) derived from
+    // the site.css href. fonts-self-hosted.css uses url("fonts/…"); once
+    // inlined into the document <head> that resolves relative to the
+    // PAGE, not the CSS file — so rewrite it to the document-relative
+    // lib/fonts/ path for this page's depth.
+    const prefix = href.slice(0, href.indexOf('lib/'));
+    const fontsCss = fontsCssRaw.replace(
+      /url\((["']?)fonts\//g,
+      `url($1${prefix}lib/fonts/`
+    );
+    let combined = [fontsCss, coreCss, critical].filter(Boolean).join('\n');
+    // Minify the inlined block (esbuild). The slice is brace-balanced
+    // top-level rules; on any parse hiccup we ship it unminified rather
+    // than fail the build.
+    try {
+      const min = await esbuild.transform(combined, {
+        loader: 'css',
+        minify: true,
+        target: ['chrome90', 'firefox88', 'safari14'],
+        charset: 'utf8',
+        legalComments: 'none',
+      });
+      combined = min.code;
+    } catch { /* keep unminified `combined` */ }
     const inlineCritical =
-      `<style id="critical-css">\n${critical}\n</style>\n` +
+      `<link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>\n` +
+      `<style id="critical-css">\n${combined}\n</style>\n` +
       `<link rel="preload" as="style" href="${href}" onload="this.onload=null;this.rel='stylesheet'">\n` +
       `<noscript><link rel="stylesheet" href="${href}"></noscript>`;
     html = html.replace(linkRe, inlineCritical);
+    // Drop the now-inlined render-blocking <link> tags for core.css and
+    // fonts-self-hosted.css (any depth prefix).
+    html = html.replace(
+      /[ \t]*<link\s+rel="stylesheet"\s+href="(?:\.\.\/)*lib\/(?:core|fonts-self-hosted)\.css"\s*>\n?/g,
+      ''
+    );
     await writeFile(p, html, 'utf8');
     patched++;
   }
-  ok(`critical CSS inlined (${(critical.length / 1024).toFixed(1)} KB) into ${patched} page(s)`);
+  ok(`critical CSS inlined (core + fonts + ${(critical.length / 1024).toFixed(1)} KB site slice) into ${patched} page(s)`);
 }
 
 // =============================================================
@@ -1307,6 +1398,8 @@ async function main() {
   // Phase 7 — extract inline JS. Runs AFTER every phase that string-
   // patches inline JS (phases 2 + 4) so the patches survive extraction.
   if (PHASE >= 7) await phase7_extractInlineJs();
+  // Phase 7b — fail the build if React leaked into the extracted main.js.
+  if (PHASE >= 7) await phase7b_assertNoReact();
   // Phase 8 — PurgeCSS unused selectors. Runs AFTER phase 7 so the
   // extracted lib/main.js is part of the content scan and any classes
   // it touches are kept. Runs BEFORE critical CSS extraction so the

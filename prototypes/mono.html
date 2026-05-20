@@ -6120,10 +6120,29 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     });
   }, 920);
   /* ==========================================================
+     rafThrottle — collapses a burst of scroll/resize events into
+     at most one call per animation frame. The wrapped handler's
+     layout reads (getBoundingClientRect) then run once per frame
+     instead of once per event — `scroll` fires several times per
+     frame — which is where Lighthouse's forced-reflow time came
+     from. Behaviour-identical: only redundant intra-frame repeats
+     are dropped; the handler still runs every frame you scroll.
+     ========================================================== */
+  function rafThrottle(fn) {
+    let scheduled = false;
+    return function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => { scheduled = false; fn(); });
+    };
+  }
+
+  /* ==========================================================
      LAYER 4 — Process timeline horizontal progress
      ========================================================== */
   const procSec = document.getElementById('process');
   const procTl  = procSec?.querySelector('.timeline');
+  let lastProcP = '';
   function updateProcProgress() {
     if (!procSec || !procTl) return;
     const r = procSec.getBoundingClientRect();
@@ -6134,10 +6153,16 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     const p = Math.max(0, Math.min(1, elapsed / total));
     // map 0.2..0.85 of section scroll → 0..1 progress
     const adjusted = Math.max(0, Math.min(1, (p - 0.2) / 0.65));
-    procTl.style.setProperty('--proc-p', (adjusted * 100).toFixed(1) + '%');
+    const val = (adjusted * 100).toFixed(1) + '%';
+    // Skip the style write when the value hasn't changed — avoids a
+    // needless style/layout invalidation each frame.
+    if (val === lastProcP) return;
+    lastProcP = val;
+    procTl.style.setProperty('--proc-p', val);
   }
-  window.addEventListener('scroll', updateProcProgress, { passive: true });
-  window.addEventListener('ps:scroll', updateProcProgress);
+  const procProgressThrottled = rafThrottle(updateProcProgress);
+  window.addEventListener('scroll', procProgressThrottled, { passive: true });
+  window.addEventListener('ps:scroll', procProgressThrottled);
   updateProcProgress();
 
   /* ==========================================================
@@ -6358,10 +6383,11 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
     rootEl.style.setProperty('--accent-2', rgb2hex(curA2));
     requestAnimationFrame(accentLoop);
   }
-  window.addEventListener('scroll', updateAccent, { passive: true });
-  window.addEventListener('ps:scroll', updateAccent);
+  const accentThrottled = rafThrottle(updateAccent);
+  window.addEventListener('scroll', accentThrottled, { passive: true });
+  window.addEventListener('ps:scroll', accentThrottled);
   // also listen on horizontal work scroller
-  document.getElementById('work-scroller')?.addEventListener('scroll', updateAccent, { passive: true });
+  document.getElementById('work-scroller')?.addEventListener('scroll', accentThrottled, { passive: true });
   updateAccent();
   requestAnimationFrame(accentLoop);
 
@@ -6639,9 +6665,10 @@ Rules:
     dots.forEach((d, i) => d.classList.toggle('is-current', i === curr));
   }
   updateMobileChrome();
-  window.addEventListener('scroll', updateMobileChrome, { passive: true });
-  window.addEventListener('ps:scroll', updateMobileChrome);
-  window.addEventListener('resize', updateMobileChrome);
+  const mobileChromeThrottled = rafThrottle(updateMobileChrome);
+  window.addEventListener('scroll', mobileChromeThrottled, { passive: true });
+  window.addEventListener('ps:scroll', mobileChromeThrottled);
+  window.addEventListener('resize', mobileChromeThrottled);
 
   applyMood();
   setInterval(applyMood, 60000);
@@ -6665,8 +6692,9 @@ Rules:
     if (curEl) curEl.textContent = String(curr + 1).padStart(2, '0');
   }
   updatePage();
-  window.addEventListener('scroll', updatePage, { passive: true });
-  window.addEventListener('ps:scroll', updatePage);
+  const updatePageThrottled = rafThrottle(updatePage);
+  window.addEventListener('scroll', updatePageThrottled, { passive: true });
+  window.addEventListener('ps:scroll', updatePageThrottled);
 
   /* ==========================================================
      LAYER 19 — Keyboard shortcuts help sheet

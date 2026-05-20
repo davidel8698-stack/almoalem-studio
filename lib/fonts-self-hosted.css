@@ -47,7 +47,15 @@
   font-family: "JetBrains Mono";
   font-style: italic;
   font-weight: 100 800;
-  font-display: swap;
+  /* `optional`, not `swap`: the only italic-mono text on first paint is the
+     hero h1 .ital word ("considered") — the LCP element, and the single
+     source of the page's CLS (Lighthouse attributed ~0.10 layout shift to
+     this one span on font swap). The face is preloaded and Latin-subset
+     (~84 KB) so it is ready before first paint on virtually every load and
+     renders normally. On a genuinely slow load the metric-matched "JetBrains
+     Mono Fallback" italic is kept for the page lifetime instead of swapping
+     in late — guaranteeing zero layout shift either way. */
+  font-display: optional;
   src: url("fonts/JetBrainsMono-Italic-VariableFont_wght.woff2") format("woff2-variations"),
        url("fonts/JetBrainsMono-Italic-VariableFont_wght.woff2") format("woff2");
 }
@@ -121,12 +129,11 @@
   descent-override: 24%;
   line-gap-override: 0%;
 }
-@font-face {
-  font-family: "Mona Sans";
-  font-style: italic;
-  font-weight: 200 900;
-  font-stretch: 75% 125%;
-  font-display: swap;
-  src: url("fonts/MonaSans-Italic-VariableFont_wdth_wght.woff2") format("woff2-variations"),
-       url("fonts/MonaSans-Italic-VariableFont_wdth_wght.woff2") format("woff2");
-}
+/* ---- Mona Sans italic — REMOVED 2026-05-20 ----
+   No element on the site ever resolves the display face (var(--display) =
+   "Mona Sans") in italic: the hero `.ital` word uses JetBrains Mono italic,
+   and `.contact-massive .ital` uses Geist (synthetic oblique). A declared-
+   but-unmatched @font-face is never downloaded, so this only added a 281 KB
+   binary to the deploy with zero render benefit. If a display heading ever
+   needs true italic, re-add the face AND restore the upstream woff2 to
+   lib/fonts/src/ so `npm run fonts:subset` regenerates it. */
