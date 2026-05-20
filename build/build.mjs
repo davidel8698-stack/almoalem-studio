@@ -393,6 +393,18 @@ async function phase0e_stripDevDeps() {
       ''
     );
 
+    // The inline TweaksApp bootstrap <script>. phase0c already compiled it
+    // from type="text/babel" into executable JS; it destructures `React`
+    // and calls ReactDOM.createRoot(… "tweaks-root" …). With the React UMD
+    // and tweaks-panel.js stripped above, leaving this block in would throw
+    // "React is not defined" the moment phase7 folds it into lib/main.js.
+    // Identified by the unique "tweaks-root" string — the main site IIFE
+    // never references it, so this matches only the dev panel's <script>.
+    html = html.replace(
+      /<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?tweaks-root(?:(?!<\/script>)[\s\S])*?<\/script>\s*\n?/gi,
+      ''
+    );
+
     if (html.length !== before) {
       await writeFile(p, html, 'utf8');
       const removedLines = (before - html.length);
