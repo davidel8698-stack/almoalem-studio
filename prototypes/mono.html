@@ -437,38 +437,6 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
 }
 
 /* ============================================================
-   SIDE RAIL — section indicator
-   ============================================================ */
-/* keep all full-width sections clear of the side rail — use MARGIN (not padding) on backgrounded blocks so their bg color doesn't extend behind the rail */
-@media (min-width: 1100px) {
-  .section { margin-inline-end: 0; }
-  /* light-bg sections (sh + body) just need padding on inner blocks, since section bg is page bg */
-  .section .sh, .section > .scroller, .section > .body, .section > .timeline, .section > .t-grid, .section > .aw-list, .section > .pg-mosaic, .section > .j-grid, .section > .svc-grid {
-    margin-inline-end: 140px;
-  }
-  /* dark contact + bg-2 sections need to NOT extend behind the rail — use margin */
-  .section[data-bg="2"] { margin-inline-end: 0; }
-  .section[data-bg="2"] > * { margin-inline-end: 140px; }
-  .section[data-bg="2"] > .s-div,
-  .section > .s-div { margin-inline-end: 0; }  /* dividers stay full width */
-  .contact-sec { padding-inline-end: calc(var(--pad-x) + 140px); }
-  .footer { padding-inline-end: calc(var(--pad-x) + 140px); }
-}
-.rail .ri {
-  display: flex; align-items: center; gap: 10px;
-  font: 500 10px/1 var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.7;                /* ~4.7:1 on --bg, WCAG AA */
-  transition: opacity .25s, color .25s;
-  pointer-events: auto;
-}
-.rail .ri .bar { display: inline-block; width: 22px; height: 1px; background: currentColor; transition: width .35s; }
-.rail .ri.is-current { opacity: 1; color: var(--ink); }
-.rail .ri.is-current .bar { width: 38px; background: var(--accent); }
-@media (max-width: 1100px) { .rail { display: none; } }
-
-/* ============================================================
    HERO
    ============================================================ */
 /* hero — clip parallax so nothing escapes the section bounds */
@@ -478,7 +446,6 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   border-bottom: var(--line);
   overflow: hidden;
 }
-/* hero-meta — keep last column inset from rail (margin, not padding, so bg doesn't extend) */
 .hero-meta {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap);
   padding-bottom: 56px;
@@ -489,8 +456,6 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   font-size: 11px;
 }
 @media (min-width: 1100px) {
-  .hero-meta { margin-inline-end: 140px; }
-  .hero .hero-grid { margin-inline-end: 140px; }
   .hero h1 { max-width: calc(16ch + 0px); }
   .hero { padding-inline-end: var(--pad-x); }
 }
@@ -568,7 +533,6 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
 .crd[data-live="1"]::after { background: var(--sage); animation: pulse 2.4s infinite; }
 
 /* the runtime counter under hero */
-/* runtime — leave room on the right for the side rail (use MARGIN so the container's bg also stays clear, not just the cells) */
 .runtime {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -577,9 +541,6 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
   border-bottom: var(--line-ink);
   background: var(--bg);
   font-family: var(--mono);
-}
-@media (min-width: 1100px) {
-  .runtime { margin-inline-end: 140px; }
 }
 .runtime .cell {
   padding: 20px 24px 18px;
@@ -1342,10 +1303,8 @@ hr.ink  { border: 0; border-top: var(--line-ink); margin: 0; }
 .loader-bottom .ll { display: inline-flex; gap: 14px; }
 
 /* hide page chrome until loader is out */
-body.loading .nav,
-body.loading .rail { opacity: 0; pointer-events: none; }
-body:not(.loading) .nav,
-body:not(.loading) .rail { opacity: 1 !important; transition: opacity .8s .3s; }
+body.loading .nav { opacity: 0; pointer-events: none; }
+body:not(.loading) .nav { opacity: 1 !important; transition: opacity .8s .3s; }
 
 /* ============================================================
    COUNTING NUMBERS — tabular for stability
@@ -2118,7 +2077,6 @@ body:not(.loading) .currently .crd { opacity: 1; transform: none; }
 
 /* Page-level fade during transition */
 body.is-transitioning .nav,
-body.is-transitioning .rail,
 body.is-transitioning .ascii-clock,
 body.is-transitioning .now-viewing,
 body.is-transitioning .scrollbar-line,
@@ -2929,9 +2887,9 @@ body[data-mood="night"] .colophon { border-top-color: rgba(239,230,206,0.18); }
   .crd .v b { font-size: 13px; }
 }
 
-/* ── 1100px: side-rail vanishes; reclaim its 140px gutter ──── */
+/* ── ≤1100px — hide ascii-clock + now-viewing; sections go full-width ──── */
 @media (max-width: 1100px) {
-  .rail, .ascii-clock, .now-viewing { display: none; }
+  .ascii-clock, .now-viewing { display: none; }
   .hero-meta, .hero .hero-grid, .runtime,
   .section[data-bg="2"] > *,
   .section > .sh, .section > .scroller, .section > .body, .section > .timeline,
@@ -3603,36 +3561,6 @@ body.menu-open .mobile-menu nav a {
     border-radius: 3px;
   }
 
-  /* ── Persistent section context bar at top ── */
-  .sec-context {
-    position: fixed;
-    top: 64px; left: 0; right: 0;
-    z-index: 60;
-    padding: 8px var(--pad-x);
-    background: var(--bg);
-    border-bottom: 1px solid var(--hair);
-    font: 500 10px/1 var(--mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-2);
-    display: flex; justify-content: space-between; align-items: center;
-    opacity: 0;
-    transform: translateY(-8px);
-    transition: opacity .35s, transform .35s;
-    pointer-events: none;
-  }
-  .sec-context.is-on {
-    opacity: 1; transform: none;
-  }
-  .sec-context b {
-    color: var(--accent);
-    font-weight: 500;
-  }
-  .sec-context .pg {
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-  }
-
   /* ── Chapter card — full-width section opener on mobile ── */
   .s-div {
     height: auto !important;
@@ -3933,30 +3861,6 @@ body.menu-open .mobile-menu nav a {
   .contact-massive {
     font-size: clamp(96px, 14vw, 200px) !important;
   }
-}
-
-/* OVERRIDE: thin section-dots rail returns at intermediate widths */
-@media (max-width: 1100px) and (min-width: 769px) {
-  .rail {
-    display: flex !important;
-    right: 12px;
-    gap: 10px;
-    mix-blend-mode: difference;
-    color: #f0ebde;
-  }
-  .rail .ri {
-    font-size: 9px;
-  }
-  .rail .ri .bar { width: 16px; }
-  .rail .ri.is-current .bar { width: 28px; }
-  /* restore the gutter for body content so it doesn't run under the dots */
-  .hero-meta, .hero .hero-grid, .runtime { margin-inline-end: 90px !important; }
-  .section .sh, .section > .scroller, .section > .body, .section > .timeline,
-  .section > .t-grid, .section > .aw-list, .section > .pg-mosaic,
-  .section > .j-grid, .section > .svc-grid { margin-inline-end: 90px !important; }
-  .section[data-bg="2"] > * { margin-inline-end: 90px !important; }
-  .contact-sec { padding-inline-end: calc(var(--pad-x) + 90px); }
-  .footer { padding-inline-end: calc(var(--pad-x) + 90px); }
 }
 
 /* OVERRIDE: keep currently as 3-col on tablet, 2-col only below 900px */
@@ -4558,8 +4462,6 @@ body[data-mood="night"] .xray-base {
 /* Page-num night */
 body[data-mood="night"] .page-num { color: #f0ebde; background: rgba(12,12,9,0.78); }
 
-/* Side rail night — keep readable, no destructive blend mode */
-body[data-mood="night"] .rail { color: var(--ink); }
 body[data-mood="night"] .ascii-clock { color: #f0ebde; background: rgba(12,12,9,0.78); }
 
 /* Ensure the loader and dark surfaces NEVER pick up mood tokens
@@ -4595,10 +4497,6 @@ body[data-mood="night"] .d-shelf .d-file .name { color: var(--ink); }
 body[data-mood="night"] .d-shelf .d-file .v { color: var(--ink-3); }
 body[data-mood="night"] .d-shelf .d-file .name .sub { color: var(--ink-3); }
 body[data-mood="night"] .d-pal .sw { border-color: var(--hair); }
-
-/* Sec-context mobile bar on night */
-body[data-mood="night"] .sec-context { background: var(--bg); border-bottom-color: var(--hair); color: var(--ink-2); }
-body[data-mood="night"] .sec-context .pg { color: var(--ink); }
 
 /* Nav blur background on night */
 body[data-mood="night"] .nav.scrolled { background: rgba(28,24,18,0.78) !important; }
@@ -6206,6 +6104,10 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
   /* ==========================================================
      LAYER 3 — Hero entrance after loader: width axis "breathe-in"
      ========================================================== */
+  // 920 = loader duration (DUR 600) + 320ms beat. Literal, not the `DUR`
+  // const — that const is block-scoped to the loader's else-branch, so
+  // reading it out here threw "ReferenceError: DUR is not defined" and
+  // aborted the rest of this init block.
   setTimeout(() => {
     const h1 = document.querySelector('.hero-h1');
     if (!h1) return;
@@ -6216,7 +6118,7 @@ body[data-mood="night"].xray .xray-toggle { background: var(--accent); color: va
       h1.style.opacity = '1';
       h1.style.filter = 'blur(0)';
     });
-  }, DUR + 320);
+  }, 920);
   /* ==========================================================
      LAYER 4 — Process timeline horizontal progress
      ========================================================== */
@@ -6723,21 +6625,9 @@ Rules:
     }, 200);
   }, { passive: true });
 
-  /* Mobile dots + context bar (Layer 23) */
+  /* Mobile section dots (Layer 23) */
   const dots = document.querySelectorAll('.mobile-dots .dot-pip');
-  const secCtx = document.getElementById('sec-context');
-  const sxNo = document.getElementById('sx-no');
-  const sxName = document.getElementById('sx-name');
-  const sxCur = document.getElementById('sx-cur');
-  const sxTot = document.getElementById('sx-tot');
-  const secNames = {
-    top: ['00', 'Index'], work: ['01', 'Selected Work'], about: ['02', 'About'],
-    approach: ['03', 'Approach'], process: ['04', 'Process'], tests: ['05', 'Kind Words'],
-    awards: ['06', 'Recognition'], play: ['07', 'Playground'], journal: ['08', 'Journal'],
-    contact: ['09', 'Contact']
-  };
-  const secIds = Object.keys(secNames);
-  if (sxTot) sxTot.textContent = String(secIds.length).padStart(2, '0');
+  const secIds = ['top','work','about','approach','process','tests','awards','play','journal','contact'];
   function updateMobileChrome() {
     let curr = 0;
     secIds.forEach((id, i) => {
@@ -6747,12 +6637,6 @@ Rules:
       if (r.top <= 120) curr = i;
     });
     dots.forEach((d, i) => d.classList.toggle('is-current', i === curr));
-    const [no, name] = secNames[secIds[curr]];
-    if (sxNo) sxNo.textContent = no;
-    if (sxName) sxName.textContent = name;
-    if (sxCur) sxCur.textContent = String(curr + 1).padStart(2, '0');
-    // show context bar only after the first scroll (not on hero at top)
-    if (secCtx) secCtx.classList.toggle('is-on', curr > 0 && window.innerWidth <= 768);
   }
   updateMobileChrome();
   window.addEventListener('scroll', updateMobileChrome, { passive: true });
