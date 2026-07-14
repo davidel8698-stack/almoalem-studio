@@ -50,3 +50,8 @@ lighthouse-*.json
 # Per-project Claude Code / APEX agent state — local agent config, not site code.
 .claude/
 .apex/
+
+# CodeGraph: our build pipeline + HTML templates live in build/ (real source,
+# not build output). CodeGraph ignores a dir named "build" by default; this
+# negation opts it back into the index. No effect on git — build/ isn't ignored.
+!build/
