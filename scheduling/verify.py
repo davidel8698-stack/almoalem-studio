@@ -15,7 +15,7 @@ START = dt.date(2026, 10, 22)
 LAST = dt.date(2026, 11, 25)
 
 NEED = {14: 9, 13: 8}                          # confirmed by the team commander (5.11)
-ILAN = dict(max_base=6)                        # commutes daily; no min-stint / Shabbat-move rules
+ILAN = dict(max_base=7)                        # commutes daily; no min-stint / Shabbat-move rules
 
 RULES = dict(
     commanders={"IM", "AC", "EZ"},            # + David always
@@ -26,6 +26,8 @@ RULES = dict(
     stint_len_4_11={"IM": 4, "AH": 3, "MA": 3, "SA": 3, "RH": 3, "EY": 1},
     planned_exit={"IM": "2026-11-10", "AH": "2026-11-10", "SA": "2026-11-10", "RH": "2026-11-10",
                   "MA": "2026-11-08", "EY": "2026-11-12"},
+    ez_home=["2026-11-05", "2026-11-06", "2026-11-07"],      # commander: Eran gets 3 more days at home first
+    ez_base=["2026-11-08", "2026-11-09", "2026-11-10", "2026-11-11"],   # then stays up until his release on 12.11
     hist={"IM": 6, "AH": 6, "MA": 6, "SA": 6, "RH": 6, "EY": 5, "AC": 6, "IK": 7, "LE": 8,
           "EZ": 8, "KA": 9, "SG": 9, "IS": 6},
     hist_sh={"IM": 1, "AH": 1, "MA": 1, "SA": 1, "RH": 1, "EY": 0, "AC": 0, "IK": 1, "LE": 1,
@@ -76,6 +78,12 @@ def main(path):
         for dstr in ds:
             i = days.index(dt.date.fromisoformat(dstr))
             check(S[p][i] == 0, f"{p} home on {dstr}")
+
+    # Eran's fixed days
+    for dstr in RULES["ez_home"]:
+        check(S["EZ"][days.index(dt.date.fromisoformat(dstr))] == 0, f"Eran home on {dstr}")
+    for dstr in RULES["ez_base"]:
+        check(S["EZ"][days.index(dt.date.fromisoformat(dstr))] == 1, f"Eran at the outpost on {dstr}")
 
     # pairs
     for a, b in RULES["pairs"]:
@@ -133,7 +141,10 @@ def main(path):
     shr = max(sh[p] for p in non_ez) - min(sh[p] for p in non_ez)
     print(f"INFO totals (of 35): {dict(sorted(tot.items(), key=lambda kv: kv[1]))}")
     print(f"INFO Shabbatot (of 5): {dict(sorted(sh.items(), key=lambda kv: kv[1]))}")
-    print(f"INFO range of totals = {rng}, range of Shabbatot = {shr}, Eran {tot['EZ']}/21 and {sh['EZ']} Shabbatot")
+    comb = {p: tot[p] + sh[p] for p in non_ez}
+    cr = max(comb.values()) - min(comb.values())
+    print(f"INFO combined burden (days + Shabbatot): {dict(sorted(comb.items(), key=lambda kv: kv[1]))}")
+    print(f"INFO range of totals = {rng}, range of Shabbatot = {shr}, range of combined = {cr}, Eran {tot['EZ']}/21 and {sh['EZ']} Shabbatot")
     excess = sum((1 + sum(S[p][i] for p in S)) - NEED[14 if days[i] < ez_exit else 13] for i in range(N))
     print(f"INFO base person-days above the rule's minimum: {excess}")
     print("ALL PASS" if ok else "SOME FAILED")

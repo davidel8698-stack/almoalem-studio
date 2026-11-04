@@ -91,7 +91,7 @@ NOT_EZ = [k for k in PEOPLE if k != "EZ"]
 NEED = {14: 9, 13: 8}
 # Ilan commutes: a "base day" for him is a day shift, he sleeps at home, and he
 # counts toward the 65% on those days.  His blocks follow looser rules.
-ILAN = dict(min_base=2, min_home=1, max_base=6)
+ILAN = dict(min_base=2, min_home=1, max_base=7)
 
 
 # ----------------------------------------------------------------------------
@@ -109,6 +109,10 @@ VARIANTS = {
     # least 4 days, and try hard for 5 (a 4-day block costs w_short × short_home).
     "G_commander":   dict(min_base=4, min_home=4, max_base=8, max_churn=6, w_trans=1.0, w_long=0.0, long_from=8, w_short=1.0),
     "H_commander_5": dict(min_base=4, min_home=5, max_base=8, max_churn=6, w_trans=1.0, w_long=0.0, long_from=8, w_short=0.0),
+    # Only the commander's own rules are hard here (max 8 base, min 4 home); the
+    # self-imposed minimum base stint is relaxed to 3 and the daily swap cap to 8,
+    # so fairness is limited by the real rules alone.
+    "I_fair":        dict(min_base=3, min_home=4, max_base=8, max_churn=8, w_trans=1.0, w_long=0.0, long_from=8, w_short=1.0),
 }
 
 WEIGHTS = dict(
@@ -125,13 +129,20 @@ WEIGHTS = dict(
     churn=500,        # per swap beyond 4 on one day
     long=500,         # per base day beyond long_from in one stint (× variant multiplier)
     short_home=4000,  # per home block of exactly min_home days that ends before the end of service (× w_short)
+    comb_range=0,     # range of the combined burden score (base days + Shabbatot) over the deployment
+    comb_dev=0,       # per half-unit deviation of the combined score from the group midpoint
+    ez_days=0,        # per base day Eran does in the plan (to give him home time before his release)
 )
 
 
 def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_counts=True,
-                    ez_exit=EZ_EXIT_DEFAULT, log=False, weights=None):
+                    ez_exit=EZ_EXIT_DEFAULT, log=False, weights=None, hard=None,
+                    ez_home_from=None, workers=4):
+    """hard: optional caps {"range": r, "sh_range": s, "comb_range": c, "excess": e,
+    "ez_max_days": k}; ez_home_from: date from which Eran stays home for good."""
     V = VARIANTS[variant]
     W = dict(WEIGHTS, **(weights or {}))
+    HARD = hard or {}
     m = cp_model.CpModel()
     P = list(PEOPLE)
     x = {(p, i): m.NewBoolVar(f"x_{p}_{i}") for p in P for i in range(N)}
@@ -160,6 +171,14 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
     for i in range(N):
         if i > ez_last:
             m.Add(x["EZ", i] == 0)
+        if ez_home_from is not None and DAYS[i] >= ez_home_from:
+            m.Add(x["EZ", i] == 0)
+    if "ez_max_days" in HARD:
+        m.Add(sum(x["EZ", i] for i in range(N)) <= HARD["ez_max_days"])
+    for d in HARD.get("ez_home", []):          # dates Eran must be home
+        m.Add(x["EZ", IDX[d]] == 0)
+    for d in HARD.get("ez_base", []):          # dates Eran must be at the outpost
+        m.Add(x["EZ", IDX[d]] == 1)
 
     # ---- presence rule -----------------------------------------------------
     for i in range(N):
@@ -298,6 +317,33 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
     m.Add(ez_sh_dev >= 10 * sh["EZ"] - 3 * (shmax + shmin))
     m.Add(ez_sh_dev >= 3 * (shmax + shmin) - 10 * sh["EZ"])
 
+    # ---- combined burden: base days + Shabbatot (one Shabbat ~ one day) -------
+    comb = {}
+    for p in NOT_EZ:
+        comb[p] = m.NewIntVar(0, 50, f"comb_{p}")
+        m.Add(comb[p] == total[p] + sh[p])
+    cmax = m.NewIntVar(0, 50, "cmax")
+    cmin = m.NewIntVar(0, 50, "cmin")
+    for p in NOT_EZ:
+        m.Add(cmax >= comb[p])
+        m.Add(cmin <= comb[p])
+    comb_devs = []
+    for p in NOT_EZ:
+        dv = m.NewIntVar(0, 100, f"cdev_{p}")
+        m.Add(dv >= 2 * comb[p] - (cmax + cmin))
+        m.Add(dv >= (cmax + cmin) - 2 * comb[p])
+        comb_devs.append(dv)
+    # ---- hard caps (used by the feasibility frontier) ------------------------
+    if "range" in HARD:
+        m.Add(tmax - tmin <= HARD["range"])
+    if "sh_range" in HARD:
+        m.Add(shmax - shmin <= HARD["sh_range"])
+    if "comb_range" in HARD:
+        m.Add(cmax - cmin <= HARD["comb_range"])
+    excess_expr = sum(x[p, i] for p in P for i in range(N)) + N - sum(need(i) for i in range(N))
+    if "excess" in HARD:
+        m.Add(excess_expr <= HARD["excess"])
+
     # ---- keep promised exits (soft): home before the promised exit costs ----
     early = []
     for p in P:
@@ -349,6 +395,9 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         + W["sh_range"] * (shmax - shmin)
         + W["sh_dev"] * sum(sh_devs)
         + W["ez_sh"] * ez_sh_dev
+        + W["comb_range"] * (cmax - cmin)
+        + W["comb_dev"] * sum(comb_devs)
+        + W["ez_days"] * sum(x["EZ", i] for i in range(N))
         + W["early"] * sum(early)
         + W["fri_arrive"] * sum(fri_arr)
         + int(W["trans"] * V["w_trans"] / 2) * n_trans2
@@ -359,7 +408,7 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
 
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = time_limit
-    solver.parameters.num_workers = 4
+    solver.parameters.num_workers = workers
     solver.parameters.log_search_progress = log
     st = solver.Solve(m)
     if st not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
@@ -388,6 +437,10 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         "ilan_counts": ilan_counts,
         "metrics": {
             "range": int(solver.Value(tmax) - solver.Value(tmin)),
+            "comb_range": (max(solver.Value(total[p]) + solver.Value(sh[p]) for p in NOT_EZ)
+                           - min(solver.Value(total[p]) + solver.Value(sh[p]) for p in NOT_EZ)),
+            "excess": int(solver.Value(excess_expr)),
+            "ez_days": int(sum(solver.Value(x["EZ", i]) for i in range(N))),
             "total_base": int(solver.Value(total_base)),
             "sh_range": int(solver.Value(shmax) - solver.Value(shmin)),
             "trips": int(solver.Value(trips_main)),
@@ -455,6 +508,11 @@ if __name__ == "__main__":
     ap.add_argument("--log", action="store_true")
     ap.add_argument("-w", "--weight", action="append", default=[], metavar="KEY=VALUE",
                     help="override an objective weight, e.g. -w early=5000 (see WEIGHTS)")
+    ap.add_argument("--ez-home", default="", help="dates Eran must be home, e.g. 5.11,6.11,7.11")
+    ap.add_argument("--ez-base", default="", help="dates Eran must be at the outpost, e.g. 8.11,9.11,10.11,11.11")
+    ap.add_argument("--hard", action="append", default=[], metavar="KEY=VALUE",
+                    help="hard cap, e.g. --hard range=1 --hard sh_range=1 --hard comb_range=0 --hard excess=1")
+    ap.add_argument("--workers", type=int, default=4)
     args = ap.parse_args()
     ez_exit = EZ_EXIT_DEFAULT
     if args.eran_exit:
@@ -464,8 +522,20 @@ if __name__ == "__main__":
     for kv in args.weight:
         k, v = kv.split("=")
         weights[k] = int(v)
+    def dates(txt):
+        res = []
+        for t in filter(None, txt.split(",")):
+            d, mth = t.split(".")
+            res.append(dt.date(2026, int(mth), int(d)))
+        return res
+    hard = {k: int(v) for k, v in (h.split("=") for h in args.hard)}
+    if args.ez_home:
+        hard["ez_home"] = dates(args.ez_home)
+    if args.ez_base:
+        hard["ez_base"] = dates(args.ez_base)
     out = build_and_solve(args.variant, args.time, args.need14, args.need13,
-                          not args.no_ilan_count, ez_exit, args.log, weights)
+                          not args.no_ilan_count, ez_exit, args.log, weights, hard or None,
+                          workers=args.workers)
     if out is None:
         print("INFEASIBLE")
         sys.exit(1)
