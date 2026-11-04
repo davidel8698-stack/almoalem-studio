@@ -14,6 +14,9 @@ import sys
 START = dt.date(2026, 10, 22)
 LAST = dt.date(2026, 11, 25)
 
+NEED = {14: 9, 13: 8}                          # confirmed by the team commander (5.11)
+ILAN = dict(max_base=6)                        # commutes daily; no min-stint / Shabbat-move rules
+
 RULES = dict(
     commanders={"IM", "AC", "EZ"},            # + David always
     pairs=[("AH", "RH"), ("KA", "SG")],
@@ -51,12 +54,12 @@ def main(path):
     worst = None
     for i, d in enumerate(days):
         roster = 14 if d < ez_exit else 13
-        need = math.ceil(0.65 * roster - 1e-9)
+        need = NEED[roster]
         present = 1 + sum(S[p][i] for p in S if (ilan_counts or p != "IS"))
         if present < need:
             worst = (d, present, need)
             break
-    check(worst is None, f"65% rule every day (10 of 14, 9 of 13 from {ez_exit.day}.{ez_exit.month})" +
+    check(worst is None, f"presence rule every day ({NEED[14]} of 14, {NEED[13]} of 13 from {ez_exit.day}.{ez_exit.month})" +
           (f" — violated {worst}" if worst else ""))
 
     # commanders
@@ -77,9 +80,9 @@ def main(path):
     for a, b in RULES["pairs"]:
         check(S[a] == S[b], f"pair {a}+{b} always together")
 
-    # no moves on Shabbat
+    # no moves on Shabbat (Ilan commutes daily and is exempt)
     sat = [i for i, d in enumerate(days) if d.weekday() == 5]
-    check(all(S[p][i] == S[p][i - 1] for p in S for i in sat), "nobody goes up or down on Shabbat")
+    check(all(S[p][i] == S[p][i - 1] for p in S if p != "IS" for i in sat), "nobody goes up or down on Shabbat")
 
     # stint lengths
     def stints(seq):
@@ -94,14 +97,15 @@ def main(path):
         H = (days.index(ez_exit) - 1) if p == "EZ" else N - 1
         seq = S[p][: H + 1]
         st = stints(seq)
-        for k, (state, a, b) in enumerate(st):
-            L = b - a + 1
-            first = (k == 0)
-            last = (k == len(st) - 1)
-            if state == 1 and not first:
-                check(L >= V["min_base"], f"{p}: base stint {days[a]}..{days[b]} has ≥{V['min_base']} days ({L})")
-            if state == 0 and not first and not last:
-                check(L >= V["min_home"], f"{p}: home stint {days[a]}..{days[b]} has ≥{V['min_home']} days ({L})")
+        if p != "IS":
+            for k, (state, a, b) in enumerate(st):
+                L = b - a + 1
+                first = (k == 0)
+                last = (k == len(st) - 1)
+                if state == 1 and not first:
+                    check(L >= V["min_base"], f"{p}: base stint {days[a]}..{days[b]} has ≥{V['min_base']} days ({L})")
+                if state == 0 and not first and not last:
+                    check(L >= V["min_home"], f"{p}: home stint {days[a]}..{days[b]} has ≥{V['min_home']} days ({L})")
         # max base stint incl. the stint running on 4.11
         pre = RULES["stint_len_4_11"].get(p, 0) if p in RULES["on_base_4_11"] else 0
         run = pre
@@ -109,7 +113,8 @@ def main(path):
         for v in seq:
             run = run + 1 if v else 0
             longest = max(longest, run)
-        check(longest <= V["max_base"], f"{p}: longest base stint {longest} ≤ {V['max_base']}")
+        cap = ILAN["max_base"] if p == "IS" else V["max_base"]
+        check(longest <= cap, f"{p}: longest base stint {longest} ≤ {cap}")
 
     # continuity with 4.11: people at base keep going at least until promised exit
     for p, ex in RULES["planned_exit"].items():
@@ -128,7 +133,7 @@ def main(path):
     print(f"INFO totals (of 35): {dict(sorted(tot.items(), key=lambda kv: kv[1]))}")
     print(f"INFO Shabbatot (of 5): {dict(sorted(sh.items(), key=lambda kv: kv[1]))}")
     print(f"INFO range of totals = {rng}, range of Shabbatot = {shr}, Eran {tot['EZ']}/21 and {sh['EZ']} Shabbatot")
-    excess = sum((1 + sum(S[p][i] for p in S)) - math.ceil(0.65 * (14 if days[i] < ez_exit else 13) - 1e-9) for i in range(N))
+    excess = sum((1 + sum(S[p][i] for p in S)) - NEED[14 if days[i] < ez_exit else 13] for i in range(N))
     print(f"INFO base person-days above the rule's minimum: {excess}")
     print("ALL PASS" if ok else "SOME FAILED")
     return 0 if ok else 1

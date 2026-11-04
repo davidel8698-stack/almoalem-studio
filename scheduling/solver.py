@@ -81,8 +81,14 @@ COMMANDERS = [k for k, v in PEOPLE.items() if v["cmd"]]
 PAIRS = [("AH", "RH"), ("KA", "SG")]
 FIXED_HOME = {"IM": [dt.date(2026, 11, 17)], "MA": [dt.date(2026, 11, 8)],
               "KA": [dt.date(2026, 11, 19)], "SG": [dt.date(2026, 11, 19)]}
-EZ_EXIT_DEFAULT = dt.date(2026, 11, 12)      # 26.11 minus 14 days; last night 11.11
+EZ_EXIT_DEFAULT = dt.date(2026, 11, 12)      # Eran's last day; from then the roster is 13
 NOT_EZ = [k for k in PEOPLE if k != "EZ"]
+# Presence the team requires (incl. David), by roster size.  Confirmed by the
+# team commander: 9 of 14 (not 10), and 8 of 13 once Eran is released.
+NEED = {14: 9, 13: 8}
+# Ilan commutes: a "base day" for him is a day shift, he sleeps at home, and he
+# counts toward the 65% on those days.  His blocks follow looser rules.
+ILAN = dict(min_base=2, min_home=1, max_base=6)
 
 
 # ----------------------------------------------------------------------------
@@ -96,6 +102,10 @@ VARIANTS = {
     "E_home4_base11": dict(min_base=4, min_home=4, max_base=11, max_churn=6, w_trans=1.0, w_long=1.0, long_from=9, w_short=0.0),
     # like A, but a home block of exactly 3 days costs half a base day (soft)
     "F_soft4":       dict(min_base=4, min_home=3, max_base=12, max_churn=6, w_trans=1.0, w_long=1.0, long_from=10, w_short=1.0),
+    # The commander's rules (5.11): max 8 base days in a row, home blocks of at
+    # least 4 days, and try hard for 5 (a 4-day block costs w_short × short_home).
+    "G_commander":   dict(min_base=4, min_home=4, max_base=8, max_churn=6, w_trans=1.0, w_long=0.0, long_from=8, w_short=1.0),
+    "H_commander_5": dict(min_base=4, min_home=5, max_base=8, max_churn=6, w_trans=1.0, w_long=0.0, long_from=8, w_short=0.0),
 }
 
 WEIGHTS = dict(
@@ -111,7 +121,7 @@ WEIGHTS = dict(
     trans=300,        # per trip (× variant multiplier)
     churn=500,        # per swap beyond 4 on one day
     long=500,         # per base day beyond long_from in one stint (× variant multiplier)
-    short_home=1500,  # per home block of exactly 3 days that ends before the end of service (× w_short)
+    short_home=4000,  # per home block of exactly min_home days that ends before the end of service (× w_short)
 )
 
 
@@ -137,7 +147,11 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
             return need14
         if r == 13 and need13 is not None:
             return need13
-        return math.ceil(0.65 * r - 1e-9)
+        return NEED[r]
+
+    def pv(p, key):
+        """Structural parameter for person p (Ilan has his own)."""
+        return ILAN[key] if (p == "IS" and key in ILAN) else V[key]
 
     # ---- Eran: released -----------------------------------------------------
     for i in range(N):
@@ -159,8 +173,10 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
     for a, b in PAIRS:
         for i in range(N):
             m.Add(x[a, i] == x[b, i])
-    # ---- nobody moves on Shabbat ------------------------------------------
+    # ---- nobody moves on Shabbat (Ilan commutes daily, so he is exempt) -----
     for p in P:
+        if p == "IS":
+            continue
         for s in SATURDAYS:
             m.Add(x[p, s] == x[p, s - 1])
 
@@ -193,17 +209,18 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
     # ---- stint lengths -----------------------------------------------------
     for p in P:
         H = horizon[p]
+        mb, mh = pv(p, "min_base"), pv(p, "min_home")
         for i in range(H + 1):
             # an arrival starts a base stint of at least min_base days, fully
             # inside the person's service (no "come up for the last two nights")
-            if i + V["min_base"] - 1 > H:
+            if i + mb - 1 > H:
                 m.Add(arrive[p, i] == 0)
             else:
-                for k in range(V["min_base"]):
+                for k in range(mb):
                     m.Add(x[p, i + k] == 1).OnlyEnforceIf(arrive[p, i])
             # a departure starts a home stint of at least min_home days, unless
             # it simply runs to the end of service
-            for k in range(V["min_home"]):
+            for k in range(mh):
                 if i + k <= H:
                     m.Add(x[p, i + k] == 0).OnlyEnforceIf(depart[p, i])
 
@@ -211,7 +228,8 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
     for p in P:
         now = PEOPLE[p]["now"]
         pre = [] if now is None else [1 if now else 0] * PEOPLE[p]["stint"]
-        WIN = V["max_base"] + 1
+        MB = pv(p, "max_base")
+        WIN = MB + 1
         for end in range(N):
             start = end - WIN + 1
             terms, const = [], 0
@@ -223,7 +241,7 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
                     if kk >= 0:
                         const += pre[kk]
             if terms:
-                m.Add(sum(terms) + const <= V["max_base"])
+                m.Add(sum(terms) + const <= MB)
 
     # ---- daily churn -------------------------------------------------------
     churn_over = []
@@ -300,19 +318,25 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
                 m.Add(sum(x[p, j] for j in range(i, i + L + 1)) - L <= b)
                 long_pen.append(b)
 
-    # ---- home blocks of exactly 3 days (soft) ------------------------------
+    # ---- home blocks of exactly min_home days (soft: prefer one day longer) --
     short_home = []
     if V.get("w_short", 0):
+        L = V["min_home"]
         for p in P:
+            if p == "IS":
+                continue
             H = horizon[p]
             for i in range(1, H + 1):                 # i == 0 is the stint already running
-                if i + 3 <= H:
+                if i + L <= H:
                     b = m.NewBoolVar(f"short_{p}_{i}")
-                    # b >= depart[i] + x[i+3] - 1  (home on i,i+1,i+2 and back on i+3)
-                    m.Add(b >= depart[p, i] + x[p, i + 3] - 1)
+                    # b >= depart[i] + x[i+L] - 1  (home on i..i+L-1 and back on i+L)
+                    m.Add(b >= depart[p, i] + x[p, i + L] - 1)
                     short_home.append(b)
 
-    n_trans = sum(arrive[k] + depart[k] for k in arrive)
+    # trips: Ilan's daily commute counts half (a switch for him is not a trip)
+    trips_main = sum(arrive[k] + depart[k] for k in arrive if k[0] != "IS")
+    trips_ilan = sum(arrive[k] + depart[k] for k in arrive if k[0] == "IS")
+    n_trans2 = 2 * trips_main + trips_ilan
     total_base = sum(total[p] for p in P)
     m.Minimize(
         W["range"] * (tmax - tmin)
@@ -324,7 +348,7 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         + W["ez_sh"] * ez_sh_dev
         + W["early"] * sum(early)
         + W["fri_arrive"] * sum(fri_arr)
-        + int(W["trans"] * V["w_trans"]) * n_trans
+        + int(W["trans"] * V["w_trans"] / 2) * n_trans2
         + W["churn"] * sum(churn_over)
         + int(W["long"] * V["w_long"]) * sum(long_pen)
         + int(W["short_home"] * V.get("w_short", 0)) * sum(short_home)
@@ -363,7 +387,8 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
             "range": int(solver.Value(tmax) - solver.Value(tmin)),
             "total_base": int(solver.Value(total_base)),
             "sh_range": int(solver.Value(shmax) - solver.Value(shmin)),
-            "trips": int(solver.Value(n_trans)),
+            "trips": int(solver.Value(trips_main)),
+            "ilan_switches": int(solver.Value(trips_ilan)),
             "early_days": int(sum(solver.Value(e) for e in early)) if early else 0,
             "fri_arrivals": int(sum(solver.Value(f) for f in fri_arr)) if fri_arr else 0,
             "short_home_blocks": int(sum(solver.Value(b) for b in short_home)) if short_home else None,
@@ -425,13 +450,19 @@ if __name__ == "__main__":
     ap.add_argument("--no-ilan-count", action="store_true", help="Ilan does not count toward the 65%")
     ap.add_argument("--eran-exit", default=None, help="Eran's exit day, e.g. 12.11")
     ap.add_argument("--log", action="store_true")
+    ap.add_argument("-w", "--weight", action="append", default=[], metavar="KEY=VALUE",
+                    help="override an objective weight, e.g. -w early=5000 (see WEIGHTS)")
     args = ap.parse_args()
     ez_exit = EZ_EXIT_DEFAULT
     if args.eran_exit:
         dd, mm = args.eran_exit.split(".")
         ez_exit = dt.date(2026, int(mm), int(dd))
+    weights = {}
+    for kv in args.weight:
+        k, v = kv.split("=")
+        weights[k] = int(v)
     out = build_and_solve(args.variant, args.time, args.need14, args.need13,
-                          not args.no_ilan_count, ez_exit, args.log)
+                          not args.no_ilan_count, ez_exit, args.log, weights)
     if out is None:
         print("INFEASIBLE")
         sys.exit(1)
