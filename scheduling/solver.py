@@ -132,6 +132,8 @@ WEIGHTS = dict(
     comb_range=0,     # range of the combined burden score (base days + Shabbatot) over the deployment
     comb_dev=0,       # per half-unit deviation of the combined score from the group midpoint
     ez_days=0,        # per base day Eran does in the plan (to give him home time before his release)
+    consec=0,         # per person closing two consecutive Shabbatot (Ilan exempt)
+    short_base=0,     # per base stint of exactly 3 days (incl. one that runs to the end), Ilan exempt
 )
 
 
@@ -333,6 +335,38 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         m.Add(dv >= 2 * comb[p] - (cmax + cmin))
         m.Add(dv >= (cmax + cmin) - 2 * comb[p])
         comb_devs.append(dv)
+    # ---- consecutive Shabbatot (7.11+14.11 or 14.11+21.11), Ilan exempt ----
+    consec = []
+    for p in P:
+        if p == "IS":
+            continue
+        for s1, s2 in zip(SATURDAYS, SATURDAYS[1:]):
+            if p == "EZ" and (s1 > ez_last or s2 > ez_last):
+                continue
+            b = m.NewBoolVar(f"consec_{p}_{s1}")
+            m.Add(b >= x[p, s1] + x[p, s2] - 1)
+            consec.append((p, b))
+            if p in HARD.get("no_consec", []):
+                m.Add(x[p, s1] + x[p, s2] <= 1)
+    if "max_consec" in HARD:
+        m.Add(sum(b for _, b in consec) <= HARD["max_consec"])
+
+    # ---- base stints of exactly 3 days (soft) --------------------------------
+    short_base = []
+    for p in P:
+        if p == "IS":
+            continue
+        H = horizon[p]
+        for i in range(1, H + 1):
+            if (p, i) not in arrive:
+                continue
+            if i + 3 <= H:
+                b = m.NewBoolVar(f"sb_{p}_{i}")
+                m.Add(b >= arrive[p, i] - x[p, i + 3])
+                short_base.append(b)
+            elif i + 2 == H:                      # arrival exactly 3 days before the end
+                short_base.append(arrive[p, i])
+
     # ---- hard caps (used by the feasibility frontier) ------------------------
     if "range" in HARD:
         m.Add(tmax - tmin <= HARD["range"])
@@ -398,6 +432,8 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         + W["comb_range"] * (cmax - cmin)
         + W["comb_dev"] * sum(comb_devs)
         + W["ez_days"] * sum(x["EZ", i] for i in range(N))
+        + W["consec"] * sum(b for _, b in consec)
+        + W["short_base"] * sum(short_base)
         + W["early"] * sum(early)
         + W["fri_arrive"] * sum(fri_arr)
         + int(W["trans"] * V["w_trans"] / 2) * n_trans2
@@ -441,6 +477,8 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
                            - min(solver.Value(total[p]) + solver.Value(sh[p]) for p in NOT_EZ)),
             "excess": int(solver.Value(excess_expr)),
             "ez_days": int(sum(solver.Value(x["EZ", i]) for i in range(N))),
+            "consec_shabbat": sorted({p for p, b in consec if solver.Value(b)}),
+            "short_base_stints": int(sum(solver.Value(b) for b in short_base)) if short_base else 0,
             "total_base": int(solver.Value(total_base)),
             "sh_range": int(solver.Value(shmax) - solver.Value(shmin)),
             "trips": int(solver.Value(trips_main)),
@@ -513,6 +551,7 @@ if __name__ == "__main__":
     ap.add_argument("--hard", action="append", default=[], metavar="KEY=VALUE",
                     help="hard cap, e.g. --hard range=1 --hard sh_range=1 --hard comb_range=0 --hard excess=1")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--no-consec", default="", help="people who must not close two consecutive Shabbatot, e.g. MA,SA")
     args = ap.parse_args()
     ez_exit = EZ_EXIT_DEFAULT
     if args.eran_exit:
@@ -533,6 +572,8 @@ if __name__ == "__main__":
         hard["ez_home"] = dates(args.ez_home)
     if args.ez_base:
         hard["ez_base"] = dates(args.ez_base)
+    if args.no_consec:
+        hard["no_consec"] = args.no_consec.split(",")
     out = build_and_solve(args.variant, args.time, args.need14, args.need13,
                           not args.no_ilan_count, ez_exit, args.log, weights, hard or None,
                           workers=args.workers)
