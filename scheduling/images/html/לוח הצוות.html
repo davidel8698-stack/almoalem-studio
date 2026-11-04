@@ -1,0 +1,437 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><style>@font-face { font-family: "Heebo"; src: url("file:///home/user/almoalem-studio/scheduling/fonts/Heebo-400.ttf"); font-weight: 400; }
+@font-face { font-family: "Heebo"; src: url("file:///home/user/almoalem-studio/scheduling/fonts/Heebo-700.ttf"); font-weight: 700; }
+@font-face { font-family: "Heebo"; src: url("file:///home/user/almoalem-studio/scheduling/fonts/Heebo-900.ttf"); font-weight: 900; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #f6f3ec; }
+body { font-family: "Heebo", "DejaVu Sans", "Arial Hebrew", Arial, sans-serif; color: #1f2419; direction: rtl; -webkit-font-smoothing: antialiased; }
+.page { background: #f6f3ec; padding: 36px 40px; }
+h1 { margin: 0; font-size: 44px; font-weight: 900; line-height: 1.1; }
+.sub { font-size: 24px; color: #5b5e52; margin: 8px 0 22px; font-weight: 500; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; }
+th, td { text-align: center; padding: 0; height: 46px; font-weight: 700; font-size: 18px; border-bottom: 2px solid #f6f3ec; }
+th { height: 62px; font-size: 19px; color: #3d4036; line-height: 1.05; background: #e9e4d6; border-bottom: 3px solid #cfc9b8; }
+th.sat { background: #f3d99a; color: #6b4a00; }
+th.name, td.name { width: 230px; text-align: right; padding-right: 14px; font-size: 24px; background: #f6f3ec; }
+td.name small { font-size: 16px; color: #6b6f60; font-weight: 500; }
+th.tot, td.tot { width: 170px; font-size: 17px; background: #f6f3ec; color: #3d4036; }
+td.b { background: #3f7f3a; color: #fff; }
+td.h { background: #ece6d6; color: #8a8572; }
+td.x { background: #d9d4c6; color: #8a8572; }
+td.sat { box-shadow: inset 0 0 0 3px #f3d99a; }
+td.b.sat { box-shadow: inset 0 0 0 3px #f3d99a; }
+td.up, td.down { font-size: 15px; letter-spacing: -0.3px; }
+td.up { background: #2e6a2a; }
+td.down { background: #d9cfa8; color: #4a3c14; }
+td.dot::after { content: " ●"; color: #e0a020; font-size: 14px; }
+tr.david td.b { background: #5f8f3b; }
+tr.count td { height: 40px; background: #f6f3ec; color: #5b5e52; font-size: 17px; }
+tr.count td.name { font-size: 18px; }
+.legend { display: flex; gap: 34px; margin-top: 22px; font-size: 20px; color: #3d4036; align-items: center; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 30px; height: 24px; vertical-align: -5px; margin-left: 8px; border-radius: 4px; }
+.notes { margin-top: 14px; font-size: 19px; color: #5b5e52; line-height: 1.5; }
+
+/* personal card */
+.card { width: 1080px; min-height: 1350px; background: #f6f3ec; padding: 0; display: flex; flex-direction: column; }
+.band { background: #2e6a2a; color: #fff; padding: 22px 48px; font-size: 26px; font-weight: 700; display: flex; justify-content: space-between; }
+.card .body { padding: 36px 48px; display: flex; flex-direction: column; gap: 26px; flex: 1; }
+.card h1 { font-size: 64px; }
+.card .role { font-size: 28px; color: #5b5e52; font-weight: 500; }
+.strip { display: grid; grid-template-columns: repeat(22, 1fr); gap: 3px; }
+.strip div { height: 54px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; border-radius: 4px; }
+.strip .b { background: #3f7f3a; color: #fff; } .strip .h { background: #e3ddcb; color: #8a8572; } .strip .x { background: #d9d4c6; color: #8a8572; }
+.strip .sat { box-shadow: inset 0 0 0 3px #f3d99a; }
+.strip .ex { background: #cfc9b8; color: #3d4036; font-size: 16px; }
+.striplbl { display: grid; grid-template-columns: repeat(22, 1fr); gap: 3px; font-size: 15px; color: #6b6f60; text-align: center; margin-top: -18px; }
+.moves { display: flex; flex-direction: column; gap: 14px; }
+.mv { display: flex; align-items: center; gap: 22px; background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 16px 24px; font-size: 34px; font-weight: 700; }
+.mv .ico { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; color: #fff; flex: none; }
+.mv.up .ico { background: #3f7f3a; } .mv.down .ico { background: #b5541c; } .mv.end .ico { background: #6b6f60; }
+.mv small { font-size: 24px; color: #6b6f60; font-weight: 500; margin-right: auto; }
+.facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.fact { background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 16px; text-align: center; }
+.fact b { display: block; font-size: 44px; font-weight: 900; color: #2e6a2a; line-height: 1.1; }
+.fact span { font-size: 22px; color: #5b5e52; }
+.foot { margin-top: auto; background: #e9e4d6; color: #3d4036; padding: 18px 48px; font-size: 22px; line-height: 1.45; }
+.shab { font-size: 28px; }
+.shab b { color: #6b4a00; }
+</style></head><body>
+<div class="page" id="shot" style="width:1760px">
+<h1>ג'אנט יציאות – צוות אלמועלם</h1>
+<div class="sub">5.11 עד 26.11 · 9 במוצב בכל יום, 8 מירידת ערן ב-12.11 · עודכן 4.11</div>
+<table><thead><tr><th class="name">לוחם</th>
+<th>4.11<br><span style="font-weight:500">היום</span></th>
+<th class="">5.11<br><span style="font-weight:500">ה'</span></th>
+<th class="">6.11<br><span style="font-weight:500">ו'</span></th>
+<th class="sat">7.11<br><span style="font-weight:500">שבת</span></th>
+<th class="">8.11<br><span style="font-weight:500">א'</span></th>
+<th class="">9.11<br><span style="font-weight:500">ב'</span></th>
+<th class="">10.11<br><span style="font-weight:500">ג'</span></th>
+<th class="">11.11<br><span style="font-weight:500">ד'</span></th>
+<th class="">12.11<br><span style="font-weight:500">ה'</span></th>
+<th class="">13.11<br><span style="font-weight:500">ו'</span></th>
+<th class="sat">14.11<br><span style="font-weight:500">שבת</span></th>
+<th class="">15.11<br><span style="font-weight:500">א'</span></th>
+<th class="">16.11<br><span style="font-weight:500">ב'</span></th>
+<th class="">17.11<br><span style="font-weight:500">ג'</span></th>
+<th class="">18.11<br><span style="font-weight:500">ד'</span></th>
+<th class="">19.11<br><span style="font-weight:500">ה'</span></th>
+<th class="">20.11<br><span style="font-weight:500">ו'</span></th>
+<th class="sat">21.11<br><span style="font-weight:500">שבת</span></th>
+<th class="">22.11<br><span style="font-weight:500">א'</span></th>
+<th class="">23.11<br><span style="font-weight:500">ב'</span></th>
+<th class="">24.11<br><span style="font-weight:500">ג'</span></th>
+<th class="">25.11<br><span style="font-weight:500">ד'</span></th>
+<th>26.11<br><span style="font-weight:500">ירידה</span></th><th class="tot">סה"כ מוצב</th></tr></thead><tbody>
+<tr class="david"><td class="name">דוד ★</td><td class="b"></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b">↓</td><td class="tot">35/35 · 5 שבתות</td></tr>
+<tr><td class="name">★ איתי <small>מדר</small></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h dot"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">19/35 · 3 שבתות</td></tr>
+<tr><td class="name">★ אביאל <small>כהן</small></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="tot">19/35 · 2 שבתות</td></tr>
+<tr><td class="name">★ ערן <small>זכי נתן</small></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="x down">סיום</td>
+<td class="x"></td>
+<td class="x sat"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x sat"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="x"></td>
+<td class="tot">12/21 · 1 שבת</td></tr>
+<tr><td class="name">עלי <small>חאשן</small></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="tot">19/35 · 3 שבתות</td></tr>
+<tr><td class="name">רפאת <small>חיחי</small></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="tot">19/35 · 3 שבתות</td></tr>
+<tr><td class="name">קיאן <small>אבו זידאן</small></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h dot"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">20/35 · 3 שבתות</td></tr>
+<tr><td class="name">סייף <small>גאנם</small></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h dot"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">20/35 · 3 שבתות</td></tr>
+<tr><td class="name">מרדכי <small>מנחם אלמקייס</small></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="h down dot">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">19/35 · 3 שבתות</td></tr>
+<tr><td class="name">סאמר <small>עראידה</small></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">19/35 · 3 שבתות</td></tr>
+<tr><td class="name">איתמר <small>קרני</small></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="tot">20/35 · 3 שבתות</td></tr>
+<tr><td class="name">ליאור <small>אבן חן</small></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="tot">19/35 · 3 שבתות</td></tr>
+<tr><td class="name">עילי <small>רופא</small></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">20/35 · 2 שבתות</td></tr>
+<tr><td class="name">אילן <small>שייביץ</small></td>
+<td class="b">משמרת</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="h down">בית</td>
+<td class="h"></td>
+<td class="b up">משמרת</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="h down">בית</td>
+<td class="h"></td>
+<td class="b up">משמרת</td>
+<td class="b"></td>
+<td class="h down">בית</td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="b up">משמרת</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot">19/35 · 2 שבתות</td></tr>
+<tr class="count"><td class="name">במוצב</td><td>8</td>
+<td class="">9</td>
+<td class="">9</td>
+<td class="sat">9</td>
+<td class="">9</td>
+<td class="">9</td>
+<td class="">9</td>
+<td class="">9</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="sat">8</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="sat">8</td>
+<td class="">10</td>
+<td class="">8</td>
+<td class="">8</td>
+<td class="">8</td>
+<td></td><td class="tot">נדרש 9 / 8</td></tr></tbody></table>
+<div class="legend"><span><i style="background:#3f7f3a"></i>מוצב</span><span><i style="background:#ece6d6;border:1px solid #cfc9b8"></i>בית</span><span><i style="background:#fff;box-shadow:inset 0 0 0 3px #f3d99a"></i>שבת</span><span><i style="background:#2e6a2a"></i>יום עלייה</span><span><i style="background:#d9cfa8"></i>יום ירידה</span><span><span style="color:#e0a020">●</span> אילוץ בבית</span><span>★ מפקד</span><span><i style="background:#e3ddcb"></i>אילן: ימי משמרת, חוזר הביתה בלילה</span></div>
+<div class="notes">יום העלייה נספר כיום מוצב, יום הירידה כיום בית. מי שיורד מחכה שהמחליף שלו יגיע למוצב. אין עליות וירידות בשבת. ב-22.11 יש 10 במוצב כי קיאן, סייף ומרדכי עולים ליום ראשון, ואביאל, עלי ורפאת יורדים למחרת כדי להגיע ל-19 ימים כמו כולם.</div>
+</div></body></html>
