@@ -130,8 +130,8 @@ table.grid tr.count td.low { color: var(--warn); font-weight: 700; }
   <h2>הכללים שהלוח עומד בהם</h2>
   <ul class="rules" id="rules"></ul>
 
-  <h2>הנחות שצריך לאשר</h2>
-  <div class="note" id="assumptions"></div>
+  <h2>הערות</h2>
+  <div class="note" id="notes"></div>
 </div>
 <script>
 const DATA = __DATA__;
@@ -156,7 +156,7 @@ const tots = nonEz.map(p => p.total), shs = nonEz.map(p => p.shabbat);
 const minT = Math.min(...tots), maxT = Math.max(...tots), minS = Math.min(...shs), maxS = Math.max(...shs);
 const ez = DATA.people.find(p => p.key === "EZ");
 document.getElementById("facts").innerHTML = [
-  ["9 מתוך 14", "במוצב בכל רגע מ-5.11 (כלל 65%)"],
+  ["9 מתוך 14", "במוצב בכל יום מ-5.11 (65% כפי שסוכם, מעוגל כלפי מטה)"],
   ["8 מתוך 13", "מירידת ערן ב-" + DATA.ez_exit],
   [(minT === maxT ? minT : minT + "–" + maxT) + " / 35", "ימי מוצב לכל לוחם בסוף התעסוקה"],
   [(minS === maxS ? minS : minS + "–" + maxS) + " / 5", "שבתות לכל לוחם"],
@@ -218,14 +218,24 @@ cards.innerHTML = DATA.people.map(p => {
     seq = seq.slice(0, cut);
   }
   const st = stints(seq);
-  for (const [s, a, b] of st) {
-    const span = a === b ? DATA.days[a].label : `${DATA.days[a].label} עד ${DATA.days[b].label}`;
-    items.push(`<li class="${s ? "b" : "h"}"><i></i><span>${s ? "מוצב" : "בית"} ${span} <small style="color:var(--muted)">(${b - a + 1})</small></span></li>`);
+  const nowState = p.now === false ? 0 : 1;
+  const lbl = s => p.key === "IS" ? (s ? "משמרות" : "לא במשמרת") : (s ? "מוצב" : "בית");
+  const dayNum = l => { const [d, m] = l.split(".").map(Number); return m === 10 ? d - 31 : d; };   // days relative to 0 = 31.10
+  if (seq[0] !== nowState) {
+    const n = dayNum("4.11") - dayNum(p.since) + 1;
+    items.push(`<li class="${nowState ? "b" : "h"}"><i></i><span>${lbl(nowState)} מ-${p.since} עד 4.11 <small style="color:var(--muted)">(${n})</small></span></li>`);
   }
+  st.forEach(([s, a, b], k) => {
+    const startLabel = (k === 0 && seq[0] === nowState) ? p.since : DATA.days[a].label;
+    const n = dayNum(DATA.days[b].label) - dayNum(startLabel) + 1;
+    const span = startLabel === DATA.days[b].label ? startLabel : `מ-${startLabel} עד ${DATA.days[b].label}`;
+    items.push(`<li class="${s ? "b" : "h"}"><i></i><span>${lbl(s)} ${span} <small style="color:var(--muted)">(${n})</small></span></li>`);
+  });
   if (p.key === "EZ") items.push(`<li class="r"><i></i><span>סיום התעסוקה המקוצרת ${DATA.ez_exit}</span></li>`);
   const fut = seq.reduce((a, v) => a + v, 0);
+  const promised = p.promised ? ` · ירידה ראשונה: ${(() => { const i = seq.indexOf(0); return i < 0 ? "26.11" : DATA.days[i].label; })()} (תוכנן ${p.promised})` : "";
   return `<div class="card"><h3>${p.name}${CMD.has(p.key) ? " ★" : ""}<span>${p.total} / ${p.days_total}</span></h3>
-    <div class="meta">מוצב עד 4.11: ${p.hist} · מתוכנן מ-5.11: ${fut} · בית סה"כ: ${p.days_total - p.total} · שבתות: ${p.shabbat} מתוך 5</div>
+    <div class="meta">מוצב עד 4.11: ${p.hist} · מתוכנן מ-5.11: ${fut} · בית סה"כ: ${p.days_total - p.total} · שבתות: ${p.shabbat} מתוך ${p.key === "EZ" ? 3 : 5}${promised}</div>
     <ul>${items.join("")}</ul></div>`;
 }).join("");
 
@@ -236,7 +246,7 @@ document.getElementById("moves").innerHTML = DATA.moves.map(m =>
 
 // ---- rules
 document.getElementById("rules").innerHTML = [
-  "<b>65% מהצוות במוצב בכל רגע, מיום חמישי 5.11:</b> 9 במוצב (כולל דוד, ואילן בימי המשמרת שלו). מירידת ערן ב-" + DATA.ez_exit + " הצוות הוא 13 חיילים ונדרשים 8.",
+  "<b>9 במוצב בכל יום מיום חמישי 5.11</b> (כולל דוד, ואילן בימי המשמרת שלו) – זה כלל ה-65% כפי שסוכם, מעוגל כלפי מטה. מירידת ערן ב-" + DATA.ez_exit + " הצוות הוא 13 חיילים ונדרשים 8.",
   "<b>לפחות 2 מפקדים במוצב:</b> דוד תמיד, ובנוסף לפחות אחד מבין איתי / אביאל / ערן.",
   "<b>אילוצים:</b> איתי בבית ב-17.11, מרדכי בבית ב-8.11, קיאן וסייף בבית ב-19.11.",
   "<b>זוגות:</b> עלי ורפאת תמיד יחד, קיאן וסייף תמיד יחד.",
@@ -246,16 +256,20 @@ document.getElementById("rules").innerHTML = [
   "<b>איזון:</b> הלוח נבחר כך שסך ימי המוצב של כל לוחם על פני כל התעסוקה (22.10 עד 25.11) שווה ככל האפשר, וכך גם השבתות, בלי ימי מוצב מיותרים מעבר לכלל.",
 ].map(s => `<li>${s}</li>`).join("");
 
-document.getElementById("assumptions").innerHTML = `<p style="margin:0 0 6px"><b>הלוח בנוי על ההנחות הבאות. אם אחת מהן לא נכונה, מריצים שוב ומקבלים לוח מעודכן:</b></p>
-<ol style="margin:0;padding-right:20px">
-<li>דוד במוצב לאורך כל התעסוקה ונספר במניין.</li>
-<li>סייף בבית עכשיו יחד עם קיאן (לא הופיע ברשימת "בבית").</li>
-<li>${DATA.ez_exit} הוא יום הירידה של ערן (נספר לו כיום בית, כמו כל יום ירידה), ומאותו יום נדרשים 8 במוצב.</li>
-<li>מי שבמוצב עכשיו יכול לרדת לפני התאריך שתוכנן לו אם זה עוזר לאיזון. תקרת 8 הימים מחייבת למשל את איתי (עלה 1.11) לרדת עד 9.11.</li>
-<li>האילוצים האישיים הם ליום אחד, וכל אחד מהם מקבל רצף בית של 4 ימים לפחות סביב התאריך.</li>
-<li>מי שבבית ב-25.11 מגיע ישירות לירידה/שחרור ב-26.11, לפי מה שתחליט. זה לא משנה את הספירה.</li>
-<li>משמרת יום של אילן בשבת נספרת לו כשבת. אם הוא לא אמור לעבוד בשבתות, הלוח מתעדכן.</li>
-</ol>`;
+const excessTxt = DATA.excess.map(e => {
+  const ups = (DATA.moves.find(m => m.date === e.date) || {up: []}).up.filter(n => !n.startsWith("אילן"));
+  const nextDate = `${parseInt(e.date) + 1}.11`;
+  const downs = (DATA.moves.find(m => m.date === nextDate) || {down: []}).down.filter(n => !n.startsWith("אילן"));
+  return `<li>ב-${e.date} יש ${e.count} במוצב (${e.count - e.need} מעל הנדרש): ${ups.join(", ")} עולים כבר ב-${e.date} כדי לקבל רצף של ${DATA.params.min_base} ימים עד הסוף, ו${downs.join(", ")} יורדים רק למחרת כדי להגיע לאותו מספר ימי מוצב כמו כולם.</li>`;
+}).join("");
+document.getElementById("notes").innerHTML = `<ul style="margin:0;padding-right:20px">
+<li>מי שיורד יורד רק אחרי שהמחליף שלו הגיע למוצב. בימי החלפת מפקד (5.11, 16.11) זה קריטי.</li>
+<li>איתי וסאמר יורדים ב-5.11 במקום 10.11 שתוכנן להם; עלי, רפאת, מרדכי ועילי יורדים כמתוכנן. כולם מסיימים את התעסוקה עם אותו מספר ימים.</li>
+${excessTxt}
+<li>${DATA.ez_exit} הוא יום הירידה של ערן (סיום התעסוקה המקוצרת); מאותו יום הצוות הוא 13 ונדרשים 8 במוצב.</li>
+<li>אילן חוזר הביתה כל לילה; יום משמרת נספר לו כיום מוצב, ואפשר להזיז לו ימים בתיאום כל עוד המניין היומי נשמר.</li>
+<li>26.11 ירידה מהקו. מי שבבית ב-25.11 מקבל הנחיה נפרדת אם להגיע.</li>
+</ul>`;
 </script>
 """
 

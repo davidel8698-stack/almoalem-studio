@@ -9,7 +9,8 @@ the day you go up counts as a base day, the day you go down counts as a home day
 ("נכנס 1.11, יום 4 ב-4.11, יוצא 10.11").  Total countable days: 22.10–25.11 = 35.
 
 Hard rules
-  * presence ≥ ceil(0.65 × roster) every day: 10 of 14, 9 of 13 once Eran is released
+  * presence every day as the commander confirmed: 9 of 14, 8 of 13 once Eran
+    goes down on 12.11 (that is the team's reading of "65%"; see NEED)
   * ≥ 2 commanders every day (David + at least one of Itay / Aviel / Eran)
   * fixed home days: Itay 17.11, Mordechai 8.11, Kian + Saif 19.11
   * pairs move together: Ali + Rafat, Kian + Saif
@@ -22,8 +23,9 @@ Objective (weighted, roughly lexicographic)
   3. equal Shabbat totals
   4. keep the exits already promised, few trips, no mass-swap days
 
-Usage:  python3 solver.py [--variant A_balanced] [--json out.json] [--time 120]
-                          [--need 10] [--no-ilan-count] [--eran-last 11.11]
+Usage:  python3 solver.py [--variant G_commander] [--json out.json] [--time 120]
+                          [--need14 9 --need13 8] [--no-ilan-count] [--eran-exit 12.11]
+                          [-w early=2500 ...]
 """
 import argparse
 import datetime as dt
