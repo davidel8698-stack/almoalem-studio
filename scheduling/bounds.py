@@ -10,7 +10,7 @@ import math
 DAYS_LEFT = 21                 # 5.11 .. 25.11
 NEED_SCHEDULED = [8] * 7 + [7] * 14      # 9 incl. David until 11.11, then 8
 TOTAL_DAYS = 35                # 22.10 .. 25.11
-HIST = {"IM": 6, "AH": 6, "MA": 6, "SA": 6, "RH": 6, "EY": 5, "AC": 6, "IK": 7, "LE": 8, "KA": 9, "SG": 9, "IS": 6}
+HIST = {"IM": 6, "AH": 6, "MA": 6, "SA": 6, "RH": 6, "EY": 5, "AC": 6, "IK": 7, "LE": 8, "KA": 8, "SG": 9, "IS": 6}
 HIST_SH = {"IM": 1, "AH": 1, "MA": 1, "SA": 1, "RH": 1, "EY": 0, "AC": 0, "IK": 1, "LE": 1, "KA": 2, "SG": 2, "IS": 0}
 EZ_HIST, EZ_HIST_SH, EZ_DAYS_LEFT = 8, 1, 7          # Eran: 5.11..11.11
 SAT_NEED_SCHEDULED = {"7.11": 8, "14.11": 7, "21.11": 7}

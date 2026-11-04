@@ -24,7 +24,7 @@ ON_BASE_NOW = {"IM": 4, "AH": 3, "MA": 3, "SA": 3, "RH": 3, "EY": 1, "IS": 1}   
 HOME_NOW = ["AC", "IK", "LE", "EZ", "KA", "SG"]
 ILAN_MAX = 7
 PEOPLE = ["IM", "AH", "MA", "SA", "RH", "EY", "AC", "IK", "LE", "EZ", "KA", "SG", "IS"]
-HIST = {"IM": 6, "AH": 6, "MA": 6, "SA": 6, "RH": 6, "EY": 5, "AC": 6, "IK": 7, "LE": 8, "EZ": 8, "KA": 9, "SG": 9, "IS": 6}
+HIST = {"IM": 6, "AH": 6, "MA": 6, "SA": 6, "RH": 6, "EY": 5, "AC": 6, "IK": 7, "LE": 8, "EZ": 8, "KA": 8, "SG": 9, "IS": 6}
 HIST_SH = {"IM": 1, "AH": 1, "MA": 1, "SA": 1, "RH": 1, "EY": 0, "AC": 0, "IK": 1, "LE": 1, "EZ": 1, "KA": 2, "SG": 2, "IS": 0}
 
 
@@ -58,8 +58,9 @@ def violations(S, params):
             if not S[p][i]:
                 V.append(f"{p} must be at base on {DAYS[i]}")
     for a, b in PAIRS:
-        if S[a] != S[b]:
-            V.append(f"pair {a}+{b} differ")
+        diff = sum(1 for i in range(21) if S[a][i] != S[b][i])
+        if diff > (1 if (a, b) == ("KA", "SG") else 0):
+            V.append(f"pair {a}+{b} differ on {diff} days")
     for p in PEOPLE:
         if p == "IS":
             continue

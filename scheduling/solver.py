@@ -74,13 +74,14 @@ PEOPLE = {
     "IK": dict(name="איתמר קרני",          cmd=False, hist=7, hist_sh=1, now=False, stint=7, exit=None),   # home since 29.10
     "LE": dict(name="ליאור אבן חן",        cmd=False, hist=8, hist_sh=1, now=False, stint=6, exit=None),   # home since 30.10
     "EZ": dict(name="ערן זכי נתן",         cmd=True,  hist=8, hist_sh=1, now=False, stint=6, exit=None),   # home since 30.10
-    "KA": dict(name="קיאן אבו זידאן",      cmd=False, hist=9, hist_sh=2, now=False, stint=5, exit=None),   # home since 31.10
+    "KA": dict(name="קיאן אבו זידאן",      cmd=False, hist=8, hist_sh=2, now=False, stint=5, exit=None),   # home since 31.10; one extra day out was not recorded (9 -> 8)
     "SG": dict(name="סייף גאנם",           cmd=False, hist=9, hist_sh=2, now=False, stint=5, exit=None),   # home since 31.10
     "IS": dict(name="אילן שייביץ",         cmd=False, hist=6, hist_sh=0, now=None,  stint=0, exit=None),   # day shifts; on 4.11
 }
 DAVID = "דוד אלמועלם"
 COMMANDERS = [k for k, v in PEOPLE.items() if v["cmd"]]
 PAIRS = [("AH", "RH"), ("KA", "SG")]
+PAIR_SLACK = {("KA", "SG"): 1}      # Kian and Saif may differ on at most one day (Kian owes a day)
 FIXED_HOME = {"IM": [dt.date(2026, 11, 17)], "MA": [dt.date(2026, 11, 8)],
               "KA": [dt.date(2026, 11, 19)], "SG": [dt.date(2026, 11, 19)],
               "LE": [dt.date(2026, 11, 5)]}     # child's surgery; can come up late on Friday 6.11
@@ -134,6 +135,7 @@ WEIGHTS = dict(
     ez_days=0,        # per base day Eran does in the plan (to give him home time before his release)
     consec=0,         # per person closing two consecutive Shabbatot (Ilan exempt)
     short_base=0,     # per base stint of exactly 3 days (incl. one that runs to the end), Ilan exempt
+    stay=0,           # per cell that differs from a reference schedule (HARD["ref"]) – keeps changes minimal
 )
 
 
@@ -195,8 +197,18 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
             m.Add(x[p, IDX[d]] == 0)
     # ---- pairs -------------------------------------------------------------
     for a, b in PAIRS:
-        for i in range(N):
-            m.Add(x[a, i] == x[b, i])
+        slack = PAIR_SLACK.get((a, b), 0)
+        if slack == 0:
+            for i in range(N):
+                m.Add(x[a, i] == x[b, i])
+        else:
+            diffs = []
+            for i in range(N):
+                d = m.NewBoolVar(f"pdiff_{a}_{b}_{i}")
+                m.Add(d >= x[a, i] - x[b, i])
+                m.Add(d >= x[b, i] - x[a, i])
+                diffs.append(d)
+            m.Add(sum(diffs) <= slack)
     # ---- nobody moves on Shabbat (Ilan commutes daily, so he is exempt) -----
     for p in P:
         if p == "IS":
@@ -374,6 +386,12 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         m.Add(shmax - shmin <= HARD["sh_range"])
     if "comb_range" in HARD:
         m.Add(cmax - cmin <= HARD["comb_range"])
+    for p, cap in HARD.get("max_total", {}).items():      # e.g. {"EY": 19}
+        m.Add(total[p] <= cap)
+    for p, floor_ in HARD.get("min_comb", {}).items():    # e.g. everyone else keeps combined >= 22
+        m.Add(comb[p] >= floor_)
+    for p, floor_ in HARD.get("min_total", {}).items():
+        m.Add(total[p] >= floor_)
     excess_expr = sum(x[p, i] for p in P for i in range(N)) + N - sum(need(i) for i in range(N))
     if "excess" in HARD:
         m.Add(excess_expr <= HARD["excess"])
@@ -434,6 +452,8 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
         + W["ez_days"] * sum(x["EZ", i] for i in range(N))
         + W["consec"] * sum(b for _, b in consec)
         + W["short_base"] * sum(short_base)
+        + W["stay"] * sum((x[p, i] if HARD["ref"][p][i] == 0 else 1 - x[p, i])
+                          for p in P for i in range(N) if "ref" in HARD)
         + W["early"] * sum(early)
         + W["fri_arrive"] * sum(fri_arr)
         + int(W["trans"] * V["w_trans"] / 2) * n_trans2
@@ -552,6 +572,9 @@ if __name__ == "__main__":
                     help="hard cap, e.g. --hard range=1 --hard sh_range=1 --hard comb_range=0 --hard excess=1")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--no-consec", default="", help="people who must not close two consecutive Shabbatot, e.g. MA,SA")
+    ap.add_argument("--ref", default=None, help="reference schedule JSON; with -w stay=N the solver changes as little as possible")
+    ap.add_argument("--max-total", action="append", default=[], metavar="KEY=N", help="cap a person's final base days, e.g. EY=19")
+    ap.add_argument("--min-comb", action="append", default=[], metavar="KEY=N", help="floor on a person's combined burden (days + Shabbatot), e.g. LE=22")
     args = ap.parse_args()
     ez_exit = EZ_EXIT_DEFAULT
     if args.eran_exit:
@@ -574,6 +597,12 @@ if __name__ == "__main__":
         hard["ez_base"] = dates(args.ez_base)
     if args.no_consec:
         hard["no_consec"] = args.no_consec.split(",")
+    if args.ref:
+        hard["ref"] = json.load(open(args.ref, encoding="utf-8"))["schedule"]
+    if args.max_total:
+        hard["max_total"] = {k: int(v) for k, v in (t.split("=") for t in args.max_total)}
+    if args.min_comb:
+        hard["min_comb"] = {k: int(v) for k, v in (t.split("=") for t in args.min_comb)}
     out = build_and_solve(args.variant, args.time, args.need14, args.need13,
                           not args.no_ilan_count, ez_exit, args.log, weights, hard or None,
                           workers=args.workers)
