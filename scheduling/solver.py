@@ -83,7 +83,7 @@ COMMANDERS = [k for k, v in PEOPLE.items() if v["cmd"]]
 PAIRS = [("AH", "RH"), ("KA", "SG")]
 FIXED_HOME = {"IM": [dt.date(2026, 11, 17)], "MA": [dt.date(2026, 11, 8)],
               "KA": [dt.date(2026, 11, 19)], "SG": [dt.date(2026, 11, 19)],
-              "LE": [dt.date(2026, 11, 5), dt.date(2026, 11, 6)]}     # child's surgery
+              "LE": [dt.date(2026, 11, 5)]}     # child's surgery; can come up late on Friday 6.11
 EZ_EXIT_DEFAULT = dt.date(2026, 11, 12)      # Eran's last day; from then the roster is 13
 NOT_EZ = [k for k in PEOPLE if k != "EZ"]
 # Presence the team requires (incl. David), by roster size.  Confirmed by the

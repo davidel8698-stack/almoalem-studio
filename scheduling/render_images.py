@@ -13,7 +13,7 @@ import os
 
 from render import (CMD, HEB_DOW, HEB_DOW_LONG, ORDER, PROMISED, SHORT, SINCE, START, EXIT, fmt, stints)
 
-FIXED = {"IM": ["17.11"], "MA": ["8.11"], "KA": ["19.11"], "SG": ["19.11"], "LE": ["5.11", "6.11"]}
+FIXED = {"IM": ["17.11"], "MA": ["8.11"], "KA": ["19.11"], "SG": ["19.11"], "LE": ["5.11"]}
 
 
 def css(font_dir):
