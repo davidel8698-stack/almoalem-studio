@@ -14,7 +14,13 @@ th { height: 62px; font-size: 19px; color: #3d4036; line-height: 1.05; backgroun
 th.sat { background: #f3d99a; color: #6b4a00; }
 th.name, td.name { width: 230px; text-align: right; padding-right: 14px; font-size: 24px; background: #f6f3ec; }
 td.name small { font-size: 16px; color: #6b6f60; font-weight: 500; }
-th.tot, td.tot { width: 170px; font-size: 17px; background: #f6f3ec; color: #3d4036; }
+th.tot, td.tot { width: 96px; font-size: 17px; background: #f6f3ec; color: #3d4036; }
+td.tot { font-size: 30px; font-weight: 900; }
+td.tot.tb { color: #2e6a2a; background: #dfe9d0; border-right: 4px solid #f6f3ec; }
+td.tot.th { color: #7a5a1c; background: #efe6cf; }
+td.tot.ts { font-size: 18px; font-weight: 700; width: 90px; color: #6b4a00; }
+th.tot.ts { width: 90px; }
+tr.count td.tot { font-size: 15px; font-weight: 500; background: #f6f3ec; }
 td.b { background: #3f7f3a; color: #fff; }
 td.h { background: #ece6d6; color: #8a8572; }
 td.x { background: #d9d4c6; color: #8a8572; }
@@ -48,9 +54,18 @@ tr.count td.name { font-size: 18px; }
 .mv .ico { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; color: #fff; flex: none; }
 .mv.up .ico { background: #3f7f3a; } .mv.down .ico { background: #b5541c; } .mv.end .ico { background: #6b6f60; }
 .mv small { font-size: 24px; color: #6b6f60; font-weight: 500; margin-right: auto; }
-.facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-.fact { background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 16px; text-align: center; }
-.fact b { display: block; font-size: 44px; font-weight: 900; color: #2e6a2a; line-height: 1.1; }
+.totals { background: #fffdf8; border: 3px solid #2e6a2a; border-radius: 14px; padding: 18px 24px; }
+.totals .lbl { font-size: 22px; color: #5b5e52; font-weight: 500; margin-bottom: 10px; }
+.totals .nums { display: flex; justify-content: space-between; align-items: baseline; }
+.totals .n { font-size: 30px; font-weight: 700; }
+.totals .n b { font-size: 64px; font-weight: 900; line-height: 1; }
+.totals .n.b { color: #2e6a2a; } .totals .n.h { color: #7a5a1c; }
+.totals .bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+.totals .bar i { display: block; height: 100%; }
+.totals .bar .b { background: #3f7f3a; } .totals .bar .h { background: #e0d5b4; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fact { background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 12px; text-align: center; }
+.fact b { display: block; font-size: 40px; font-weight: 900; color: #2e6a2a; line-height: 1.1; }
 .fact span { font-size: 22px; color: #5b5e52; }
 .foot { margin-top: auto; background: #e9e4d6; color: #3d4036; padding: 18px 48px; font-size: 22px; line-height: 1.45; }
 .shab { font-size: 28px; }
@@ -60,10 +75,11 @@ tr.count td.name { font-size: 18px; }
 <div class="band"><span>צוות אלמועלם · ג'אנט יציאות</span><span>5.11 עד 26.11</span></div>
 <div class="body">
 <div><h1>ערן זכי נתן</h1><div class="role">מפקד · התוכנית האישית שלך</div></div>
+<div class="totals"><div class="lbl">סה"כ בתעסוקה, מתחילת הקו 22.10 עד שחרורך ב-12.11 (21 ימים), כולל מה שכבר נעשה:</div><div class="nums"><div class="n b"><b>14</b> ימי מוצב</div><div class="n h"><b>7</b> ימי בית</div></div><div class="bar"><i class="b" style="width:66.7%"></i><i class="h" style="width:33.3%"></i></div></div>
 <div class="strip">
 <div class="h ">5</div>
-<div class="h ">6</div>
-<div class="h sat">7</div>
+<div class="b ">6</div>
+<div class="b sat">7</div>
 <div class="b ">8</div>
 <div class="b ">9</div>
 <div class="b ">10</div>
@@ -85,11 +101,11 @@ tr.count td.name { font-size: 18px; }
 <div class="ex">↓</div></div>
 <div class="striplbl"><span>ה'</span><span>ו'</span><span>ש</span><span>א'</span><span>ב'</span><span>ג'</span><span>ד'</span><span>ה'</span><span>ו'</span><span>ש</span><span>א'</span><span>ב'</span><span>ג'</span><span>ד'</span><span>ה'</span><span>ו'</span><span>ש</span><span>א'</span><span>ב'</span><span>ג'</span><span>ד'</span><span>26</span></div>
 <div class="moves">
-<div class="mv up"><div class="ico">▲</div><div>עולה 8.11</div><small>יום ראשון</small></div>
+<div class="mv up"><div class="ico">▲</div><div>עולה 6.11</div><small>יום שישי</small></div>
 <div class="mv end"><div class="ico">■</div><div>יורד 12.11 – סיום התעסוקה</div><small>יום חמישי</small></div>
 </div>
-<div class="shab">סוגר שבתות: <b>לא סוגר שבת נוספת</b></div>
-<div class="facts"><div class="fact"><b>12</b><span>ימי מוצב מתוך 21</span></div><div class="fact"><b>9</b><span>ימי בית</span></div><div class="fact"><b>1</b><span>שבתות מתוך 3</span></div></div>
+<div class="shab">סוגר שבתות: <b>7.11</b></div>
+<div class="facts" style="grid-template-columns:1fr 1fr 1fr"><div class="fact"><b>2</b><span>שבתות מתוך 3</span></div><div class="fact"><b>8</b><span>ימי מוצב עד 4.11</span></div><div class="fact"><b>6</b><span>ימי מוצב מ-5.11</span></div></div>
 </div>
 <div class="foot">יורדים רק אחרי שהמחליף הגיע למוצב. אין עליות וירידות בשבת. יום העלייה נספר כיום מוצב, יום הירידה כיום בית.</div>
 </div></body></html>

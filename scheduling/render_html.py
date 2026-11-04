@@ -136,7 +136,7 @@ table.grid tr.count td.low { color: var(--warn); font-weight: 700; }
 <script>
 const DATA = __DATA__;
 const CMD = new Set(["IM","AC","EZ"]);
-const FIXED = {IM:["17.11"], MA:["8.11"], KA:["19.11"], SG:["19.11"]};
+const FIXED = {IM:["17.11"], MA:["8.11"], KA:["19.11"], SG:["19.11"], LE:["5.11", "6.11"]};
 const PRE = {label:"4.11", dow:"ד'", sat:false, pre:true};
 const POST = {label:"26.11", dow:"ה'", post:true};
 const days = [PRE, ...DATA.days, POST];
@@ -234,7 +234,7 @@ cards.innerHTML = DATA.people.map(p => {
   if (p.key === "EZ") items.push(`<li class="r"><i></i><span>סיום התעסוקה המקוצרת ${DATA.ez_exit}</span></li>`);
   const fut = seq.reduce((a, v) => a + v, 0);
   const promised = p.promised ? ` · ירידה ראשונה: ${(() => { const i = seq.indexOf(0); return i < 0 ? "26.11" : DATA.days[i].label; })()} (תוכנן ${p.promised})` : "";
-  return `<div class="card"><h3>${p.name}${CMD.has(p.key) ? " ★" : ""}<span>${p.total} / ${p.days_total}</span></h3>
+  return `<div class="card"><h3>${p.name}${CMD.has(p.key) ? " ★" : ""}<span>${p.total} מוצב · ${p.days_total - p.total} בית</span></h3>
     <div class="meta">מוצב עד 4.11: ${p.hist} · מתוכנן מ-5.11: ${fut} · בית סה"כ: ${p.days_total - p.total} · שבתות: ${p.shabbat} מתוך ${p.key === "EZ" ? 3 : 5}${promised}</div>
     <ul>${items.join("")}</ul></div>`;
 }).join("");
@@ -248,7 +248,7 @@ document.getElementById("moves").innerHTML = DATA.moves.map(m =>
 document.getElementById("rules").innerHTML = [
   "<b>9 במוצב בכל יום מיום חמישי 5.11</b> (כולל דוד, ואילן בימי המשמרת שלו) – זה כלל ה-65% כפי שסוכם, מעוגל כלפי מטה. מירידת ערן ב-" + DATA.ez_exit + " הצוות הוא 13 חיילים ונדרשים 8.",
   "<b>לפחות 2 מפקדים במוצב:</b> דוד תמיד, ובנוסף לפחות אחד מבין איתי / אביאל / ערן.",
-  "<b>אילוצים:</b> איתי בבית ב-17.11, מרדכי בבית ב-8.11, קיאן וסייף בבית ב-19.11.",
+  "<b>אילוצים:</b> ליאור בבית ב-5.11 ו-6.11, איתי בבית ב-17.11, מרדכי בבית ב-8.11, קיאן וסייף בבית ב-19.11.",
   "<b>זוגות:</b> עלי ורפאת תמיד יחד, קיאן וסייף תמיד יחד.",
   "<b>אין עליות או ירידות בשבת.</b> מי שבמוצב בשישי סוגר את השבת.",
   `<b>רצפים:</b> לא יותר מ-${DATA.params.max_base} ימי מוצב ברצף (כולל הרצף שכבר התחיל). לפחות ${DATA.params.min_home} ימי בית ברצף, עם העדפה חזקה ל-5 (חוץ מבית עד סוף התעסוקה). לפחות ${DATA.params.min_base} ימי מוצב ברצף.`,

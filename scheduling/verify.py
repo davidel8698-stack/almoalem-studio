@@ -20,7 +20,8 @@ ILAN = dict(max_base=6)                        # commutes daily; no min-stint / 
 RULES = dict(
     commanders={"IM", "AC", "EZ"},            # + David always
     pairs=[("AH", "RH"), ("KA", "SG")],
-    fixed_home={"IM": ["2026-11-17"], "MA": ["2026-11-08"], "KA": ["2026-11-19"], "SG": ["2026-11-19"]},
+    fixed_home={"IM": ["2026-11-17"], "MA": ["2026-11-08"], "KA": ["2026-11-19"], "SG": ["2026-11-19"],
+                "LE": ["2026-11-05", "2026-11-06"]},
     on_base_4_11={"IM", "AH", "MA", "SA", "RH", "EY"},
     stint_len_4_11={"IM": 4, "AH": 3, "MA": 3, "SA": 3, "RH": 3, "EY": 1},
     planned_exit={"IM": "2026-11-10", "AH": "2026-11-10", "SA": "2026-11-10", "RH": "2026-11-10",

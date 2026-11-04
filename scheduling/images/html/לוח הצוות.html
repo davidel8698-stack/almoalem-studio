@@ -14,7 +14,13 @@ th { height: 62px; font-size: 19px; color: #3d4036; line-height: 1.05; backgroun
 th.sat { background: #f3d99a; color: #6b4a00; }
 th.name, td.name { width: 230px; text-align: right; padding-right: 14px; font-size: 24px; background: #f6f3ec; }
 td.name small { font-size: 16px; color: #6b6f60; font-weight: 500; }
-th.tot, td.tot { width: 170px; font-size: 17px; background: #f6f3ec; color: #3d4036; }
+th.tot, td.tot { width: 96px; font-size: 17px; background: #f6f3ec; color: #3d4036; }
+td.tot { font-size: 30px; font-weight: 900; }
+td.tot.tb { color: #2e6a2a; background: #dfe9d0; border-right: 4px solid #f6f3ec; }
+td.tot.th { color: #7a5a1c; background: #efe6cf; }
+td.tot.ts { font-size: 18px; font-weight: 700; width: 90px; color: #6b4a00; }
+th.tot.ts { width: 90px; }
+tr.count td.tot { font-size: 15px; font-weight: 500; background: #f6f3ec; }
 td.b { background: #3f7f3a; color: #fff; }
 td.h { background: #ece6d6; color: #8a8572; }
 td.x { background: #d9d4c6; color: #8a8572; }
@@ -48,9 +54,18 @@ tr.count td.name { font-size: 18px; }
 .mv .ico { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; color: #fff; flex: none; }
 .mv.up .ico { background: #3f7f3a; } .mv.down .ico { background: #b5541c; } .mv.end .ico { background: #6b6f60; }
 .mv small { font-size: 24px; color: #6b6f60; font-weight: 500; margin-right: auto; }
-.facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-.fact { background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 16px; text-align: center; }
-.fact b { display: block; font-size: 44px; font-weight: 900; color: #2e6a2a; line-height: 1.1; }
+.totals { background: #fffdf8; border: 3px solid #2e6a2a; border-radius: 14px; padding: 18px 24px; }
+.totals .lbl { font-size: 22px; color: #5b5e52; font-weight: 500; margin-bottom: 10px; }
+.totals .nums { display: flex; justify-content: space-between; align-items: baseline; }
+.totals .n { font-size: 30px; font-weight: 700; }
+.totals .n b { font-size: 64px; font-weight: 900; line-height: 1; }
+.totals .n.b { color: #2e6a2a; } .totals .n.h { color: #7a5a1c; }
+.totals .bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+.totals .bar i { display: block; height: 100%; }
+.totals .bar .b { background: #3f7f3a; } .totals .bar .h { background: #e0d5b4; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fact { background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 12px; text-align: center; }
+.fact b { display: block; font-size: 40px; font-weight: 900; color: #2e6a2a; line-height: 1.1; }
 .fact span { font-size: 22px; color: #5b5e52; }
 .foot { margin-top: auto; background: #e9e4d6; color: #3d4036; padding: 18px 48px; font-size: 22px; line-height: 1.45; }
 .shab { font-size: 28px; }
@@ -82,8 +97,8 @@ tr.count td.name { font-size: 18px; }
 <th class="">23.11<br><span style="font-weight:500">ב'</span></th>
 <th class="">24.11<br><span style="font-weight:500">ג'</span></th>
 <th class="">25.11<br><span style="font-weight:500">ד'</span></th>
-<th>26.11<br><span style="font-weight:500">ירידה</span></th><th class="tot">סה"כ מוצב</th></tr></thead><tbody>
-<tr class="david"><td class="name">דוד ★</td><td class="b"></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b">↓</td><td class="tot">35/35 · 5 שבתות</td></tr>
+<th>26.11<br><span style="font-weight:500">ירידה</span></th><th class="tot">סה"כ<br>מוצב</th><th class="tot">סה"כ<br>בית</th><th class="tot ts">שבתות</th></tr></thead><tbody>
+<tr class="david"><td class="name">דוד ★</td><td class="b"></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b sat"></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b "></td><td class="b">↓</td><td class="tot tb">35</td><td class="tot th">0</td><td class="tot ts">5</td></tr>
 <tr><td class="name">★ איתי <small>מדר</small></td>
 <td class="b"></td>
 <td class="h down">יורד</td>
@@ -97,18 +112,18 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="b sat"></td>
 <td class="b"></td>
-<td class="h down">יורד</td>
-<td class="h dot"></td>
-<td class="h"></td>
-<td class="h"></td>
-<td class="b up">עולה</td>
-<td class="b sat"></td>
 <td class="b"></td>
+<td class="h down dot">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h sat"></td>
+<td class="b up">עולה</td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b">↓</td>
-<td class="tot">19/35 · 3 שבתות</td></tr>
+<td class="tot tb">18</td><td class="tot th">17</td><td class="tot ts">2</td></tr>
 <tr><td class="name">★ אביאל <small>כהן</small></td>
 <td class="h"></td>
 <td class="b up">עולה</td>
@@ -117,29 +132,29 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
 <td class="h down">יורד</td>
-<td class="h"></td>
-<td class="h"></td>
 <td class="h sat"></td>
 <td class="h"></td>
+<td class="h"></td>
 <td class="b up">עולה</td>
-<td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b sat"></td>
-<td class="b"></td>
 <td class="h down">יורד</td>
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="tot">19/35 · 2 שבתות</td></tr>
+<td class="h"></td>
+<td class="tot tb">19</td><td class="tot th">16</td><td class="tot ts">2</td></tr>
 <tr><td class="name">★ ערן <small>זכי נתן</small></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="h"></td>
-<td class="h sat"></td>
 <td class="b up">עולה</td>
+<td class="b sat"></td>
+<td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
@@ -158,7 +173,7 @@ tr.count td.name { font-size: 18px; }
 <td class="x"></td>
 <td class="x"></td>
 <td class="x"></td>
-<td class="tot">12/21 · 1 שבת</td></tr>
+<td class="tot tb">14</td><td class="tot th">7</td><td class="tot ts">2/3</td></tr>
 <tr><td class="name">עלי <small>חאשן</small></td>
 <td class="b"></td>
 <td class="b"></td>
@@ -183,7 +198,7 @@ tr.count td.name { font-size: 18px; }
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="tot">19/35 · 3 שבתות</td></tr>
+<td class="tot tb">19</td><td class="tot th">16</td><td class="tot ts">3</td></tr>
 <tr><td class="name">רפאת <small>חיחי</small></td>
 <td class="b"></td>
 <td class="b"></td>
@@ -208,7 +223,7 @@ tr.count td.name { font-size: 18px; }
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="tot">19/35 · 3 שבתות</td></tr>
+<td class="tot tb">19</td><td class="tot th">16</td><td class="tot ts">3</td></tr>
 <tr><td class="name">קיאן <small>אבו זידאן</small></td>
 <td class="h"></td>
 <td class="h"></td>
@@ -233,7 +248,7 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="b"></td>
 <td class="b">↓</td>
-<td class="tot">20/35 · 3 שבתות</td></tr>
+<td class="tot tb">20</td><td class="tot th">15</td><td class="tot ts">3</td></tr>
 <tr><td class="name">סייף <small>גאנם</small></td>
 <td class="h"></td>
 <td class="h"></td>
@@ -258,17 +273,17 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="b"></td>
 <td class="b">↓</td>
-<td class="tot">20/35 · 3 שבתות</td></tr>
+<td class="tot tb">20</td><td class="tot th">15</td><td class="tot ts">3</td></tr>
 <tr><td class="name">מרדכי <small>מנחם אלמקייס</small></td>
 <td class="b"></td>
 <td class="b"></td>
-<td class="b"></td>
-<td class="b sat"></td>
-<td class="h down dot">יורד</td>
-<td class="h"></td>
-<td class="h"></td>
+<td class="h down">יורד</td>
+<td class="h sat"></td>
+<td class="h dot"></td>
 <td class="h"></td>
 <td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
 <td class="b"></td>
 <td class="b sat"></td>
 <td class="b"></td>
@@ -283,24 +298,24 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="b"></td>
 <td class="b">↓</td>
-<td class="tot">19/35 · 3 שבתות</td></tr>
+<td class="tot tb">19</td><td class="tot th">16</td><td class="tot ts">2</td></tr>
 <tr><td class="name">סאמר <small>עראידה</small></td>
 <td class="b"></td>
-<td class="h down">יורד</td>
-<td class="h"></td>
-<td class="h sat"></td>
-<td class="h"></td>
-<td class="b up">עולה</td>
-<td class="b"></td>
-<td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
 <td class="h down">יורד</td>
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
+<td class="h sat"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
 <td class="b up">עולה</td>
+<td class="b"></td>
 <td class="b"></td>
 <td class="b sat"></td>
 <td class="b"></td>
@@ -308,13 +323,20 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="b"></td>
 <td class="b">↓</td>
-<td class="tot">19/35 · 3 שבתות</td></tr>
+<td class="tot tb">19</td><td class="tot th">16</td><td class="tot ts">3</td></tr>
 <tr><td class="name">איתמר <small>קרני</small></td>
 <td class="h"></td>
 <td class="b up">עולה</td>
 <td class="b"></td>
 <td class="b sat"></td>
 <td class="b"></td>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b sat"></td>
+<td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
@@ -323,42 +345,35 @@ tr.count td.name { font-size: 18px; }
 <td class="h sat"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="b up">עולה</td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="b sat"></td>
-<td class="h down">יורד</td>
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="h"></td>
-<td class="tot">20/35 · 3 שבתות</td></tr>
+<td class="tot tb">18</td><td class="tot th">17</td><td class="tot ts">3</td></tr>
 <tr><td class="name">ליאור <small>אבן חן</small></td>
 <td class="h"></td>
-<td class="b up">עולה</td>
-<td class="b"></td>
-<td class="b sat"></td>
-<td class="b"></td>
-<td class="h down">יורד</td>
-<td class="h"></td>
-<td class="h"></td>
-<td class="h"></td>
-<td class="b up">עולה</td>
-<td class="b sat"></td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="h down">יורד</td>
+<td class="h dot"></td>
+<td class="h dot"></td>
 <td class="h sat"></td>
 <td class="h"></td>
+<td class="b up">עולה</td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="h down">יורד</td>
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="tot">19/35 · 3 שבתות</td></tr>
+<td class="b up">עולה</td>
+<td class="b sat"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b"></td>
+<td class="b">↓</td>
+<td class="tot tb">20</td><td class="tot th">15</td><td class="tot ts">3</td></tr>
 <tr><td class="name">עילי <small>רופא</small></td>
 <td class="b"></td>
 <td class="b"></td>
@@ -373,17 +388,17 @@ tr.count td.name { font-size: 18px; }
 <td class="h sat"></td>
 <td class="h"></td>
 <td class="h"></td>
-<td class="h"></td>
 <td class="b up">עולה</td>
+<td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b sat"></td>
 <td class="b"></td>
 <td class="b"></td>
-<td class="b"></td>
-<td class="b"></td>
-<td class="b">↓</td>
-<td class="tot">20/35 · 2 שבתות</td></tr>
+<td class="h down">יורד</td>
+<td class="h"></td>
+<td class="h"></td>
+<td class="tot tb">19</td><td class="tot th">16</td><td class="tot ts">2</td></tr>
 <tr><td class="name">אילן <small>שייביץ</small></td>
 <td class="b">משמרת</td>
 <td class="b"></td>
@@ -392,7 +407,14 @@ tr.count td.name { font-size: 18px; }
 <td class="b"></td>
 <td class="h down">בית</td>
 <td class="h"></td>
+<td class="h"></td>
 <td class="b up">משמרת</td>
+<td class="b"></td>
+<td class="b sat"></td>
+<td class="h down">בית</td>
+<td class="h"></td>
+<td class="b up">משמרת</td>
+<td class="b"></td>
 <td class="b"></td>
 <td class="b"></td>
 <td class="b sat"></td>
@@ -400,15 +422,8 @@ tr.count td.name { font-size: 18px; }
 <td class="h"></td>
 <td class="b up">משמרת</td>
 <td class="b"></td>
-<td class="h down">בית</td>
-<td class="h"></td>
-<td class="h sat"></td>
-<td class="h"></td>
-<td class="b up">משמרת</td>
-<td class="b"></td>
-<td class="b"></td>
 <td class="b">↓</td>
-<td class="tot">19/35 · 2 שבתות</td></tr>
+<td class="tot tb">20</td><td class="tot th">15</td><td class="tot ts">3</td></tr>
 <tr class="count"><td class="name">במוצב</td><td>8</td>
 <td class="">9</td>
 <td class="">9</td>
@@ -431,7 +446,8 @@ tr.count td.name { font-size: 18px; }
 <td class="">8</td>
 <td class="">8</td>
 <td class="">8</td>
-<td></td><td class="tot">נדרש 9 / 8</td></tr></tbody></table>
+<td></td><td class="tot" colspan="3">נדרש 9 עד 11.11, 8 מ-12.11</td></tr></tbody></table>
+<div class="notes" style="margin-top:10px"><b>סה"כ מוצב / בית</b> = מתחילת הקו 22.10 עד 25.11 (35 ימים), כולל מה שכבר נעשה. ערן: מתוך 21 ימים עד שחרורו.</div>
 <div class="legend"><span><i style="background:#3f7f3a"></i>מוצב</span><span><i style="background:#ece6d6;border:1px solid #cfc9b8"></i>בית</span><span><i style="background:#fff;box-shadow:inset 0 0 0 3px #f3d99a"></i>שבת</span><span><i style="background:#2e6a2a"></i>יום עלייה</span><span><i style="background:#d9cfa8"></i>יום ירידה</span><span><span style="color:#e0a020">●</span> אילוץ בבית</span><span>★ מפקד</span><span><i style="background:#e3ddcb"></i>אילן: ימי משמרת, חוזר הביתה בלילה</span></div>
-<div class="notes">יום העלייה נספר כיום מוצב, יום הירידה כיום בית. מי שיורד מחכה שהמחליף שלו יגיע למוצב. אין עליות וירידות בשבת. ב-22.11 יש 10 במוצב כי קיאן, סייף ומרדכי עולים ליום ראשון, ואביאל, עלי ורפאת יורדים למחרת כדי להגיע ל-19 ימים כמו כולם.</div>
+<div class="notes">יום העלייה נספר כיום מוצב, יום הירידה כיום בית. מי שיורד מחכה שהמחליף שלו יגיע למוצב. אין עליות וירידות בשבת. ב-22.11 יש 10 במוצב (2 מעל הנדרש): איתי, קיאן, סייף, מרדכי עולים כבר ב-22.11, ועלי, רפאת יורדים רק למחרת, כדי שכולם יגיעו לאותו מספר ימים.</div>
 </div></body></html>
