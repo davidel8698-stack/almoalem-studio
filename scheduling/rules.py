@@ -20,7 +20,7 @@ FIXED_HOME = {"IM": [DAYS.index(dt.date(2026, 11, 17))], "MA": [DAYS.index(dt.da
               "LE": [DAYS.index(dt.date(2026, 11, 5))],
               "EZ": [0, 1, 2]}
 FIXED_BASE = {"EZ": [3, 4, 5, 6]}
-ON_BASE_NOW = {"IM": 4, "AH": 3, "MA": 3, "SA": 3, "RH": 3, "EY": 1}     # stint length already running on 4.11
+ON_BASE_NOW = {"IM": 4, "AH": 3, "MA": 3, "SA": 3, "RH": 3, "EY": 1, "IS": 1}     # stint length already running on 4.11 (Ilan: shift on 4.11)
 HOME_NOW = ["AC", "IK", "LE", "EZ", "KA", "SG"]
 ILAN_MAX = 7
 PEOPLE = ["IM", "AH", "MA", "SA", "RH", "EY", "AC", "IK", "LE", "EZ", "KA", "SG", "IS"]

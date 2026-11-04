@@ -249,7 +249,7 @@ def build_and_solve(variant, time_limit=120, need14=None, need13=None, ilan_coun
     # maximum base stint (sliding window that includes the stint in progress)
     for p in P:
         now = PEOPLE[p]["now"]
-        pre = [] if now is None else [1 if now else 0] * PEOPLE[p]["stint"]
+        pre = [1] if p == "IS" else [1 if now else 0] * PEOPLE[p]["stint"]   # Ilan was on shift on 4.11
         MB = pv(p, "max_base")
         WIN = MB + 1
         for end in range(N):

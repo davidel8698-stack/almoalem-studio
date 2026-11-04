@@ -116,7 +116,7 @@ def main(path):
                 if state == 0 and not first and not last:
                     check(L >= V["min_home"], f"{p}: home stint {days[a]}..{days[b]} has ≥{V['min_home']} days ({L})")
         # max base stint incl. the stint running on 4.11
-        pre = RULES["stint_len_4_11"].get(p, 0) if p in RULES["on_base_4_11"] else 0
+        pre = RULES["stint_len_4_11"].get(p, 0) if p in RULES["on_base_4_11"] else (1 if p == "IS" else 0)
         run = pre
         longest = 0
         for v in seq:
