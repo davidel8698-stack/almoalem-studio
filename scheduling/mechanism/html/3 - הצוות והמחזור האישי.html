@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<style>
+@font-face { font-family: "Heebo"; src: url("file:///home/user/almoalem-studio/scheduling/fonts/Heebo-400.ttf"); font-weight: 400; }
+@font-face { font-family: "Heebo"; src: url("file:///home/user/almoalem-studio/scheduling/fonts/Heebo-700.ttf"); font-weight: 700; }
+@font-face { font-family: "Heebo"; src: url("file:///home/user/almoalem-studio/scheduling/fonts/Heebo-900.ttf"); font-weight: 900; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #f6f3ec; }
+body { font-family: "Heebo", "DejaVu Sans", Arial, sans-serif; color: #1f2419; direction: rtl; -webkit-font-smoothing: antialiased; }
+.poster { width: 1080px; background: #f6f3ec; }
+.band { background: #2e6a2a; color: #fff; padding: 26px 44px; }
+.band h1 { margin: 0; font-size: 46px; font-weight: 900; line-height: 1.1; }
+.band p { margin: 8px 0 0; font-size: 22px; opacity: .92; }
+.sec { padding: 26px 44px 8px; }
+.sec h2 { margin: 0 0 6px; font-size: 32px; font-weight: 900; }
+.sec h2 span { display: inline-block; width: 44px; height: 44px; border-radius: 50%; background: #2e6a2a; color: #fff; text-align: center; line-height: 44px; font-size: 24px; margin-left: 12px; vertical-align: 4px; }
+.sec .lead { font-size: 21px; color: #5b5e52; margin: 0 0 14px; }
+.A { background: #b5541c; color: #fff; } .B { background: #7a5a1c; color: #fff; } .C { background: #8fbf6a; color: #1f2419; } .K { background: #3d4036; color: #fff; }
+table.rot { border-collapse: separate; border-spacing: 6px; width: 100%; table-layout: fixed; }
+table.rot th { font-size: 22px; font-weight: 700; color: #5b5e52; padding: 4px; }
+table.rot td { height: 74px; border-radius: 10px; text-align: center; font-size: 30px; font-weight: 900; }
+table.rot td.name { background: #e9e4d6; color: #1f2419; font-size: 26px; text-align: right; padding-right: 18px; }
+table.rot td.kap { height: 54px; font-size: 22px; font-weight: 700; }
+.legend { display: flex; gap: 10px; margin-top: 10px; }
+.legend div { flex: 1; border-radius: 10px; padding: 12px 14px; font-size: 20px; line-height: 1.3; }
+.legend b { display: block; font-size: 24px; margin-bottom: 2px; }
+.cards { display: flex; gap: 12px; }
+.card { flex: 1; border-radius: 12px; padding: 14px 16px; min-height: 230px; }
+.card h3 { margin: 0 0 8px; font-size: 26px; font-weight: 900; }
+.card .ppl { display: flex; gap: 5px; flex-wrap: wrap; margin: 6px 0 10px; }
+.card .ppl i { width: 22px; height: 30px; border-radius: 11px 11px 5px 5px; background: rgba(255,255,255,.85); display: block; }
+.card.C .ppl i { background: #2e6a2a; }
+.card .ppl i.cmd { background: #f3d99a; }
+.card.C .ppl i.cmd { background: #b5541c; }
+.card ul { margin: 0; padding: 0 18px 0 0; font-size: 21px; line-height: 1.35; }
+.cells { display: flex; gap: 12px; margin-bottom: 14px; }
+.cell { flex: 1; background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 12px 14px; font-size: 20px; }
+.cell b { font-size: 28px; font-weight: 900; color: #2e6a2a; display: block; }
+.strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; }
+.strip div { height: 64px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; text-align: center; line-height: 1.1; }
+.d { background: #c9803f; color: #fff; } .n { background: #3d4036; color: #fff; } .t { background: #8fbf6a; } .k { background: #cfe3bd; }
+.clock { position: relative; height: 160px; margin: 10px 0 0; }
+.clock .bar { position: absolute; top: 62px; right: 0; left: 0; height: 34px; border-radius: 17px; background: linear-gradient(to left, #fffdf8 0 33.3%, #efe6cf 33.3% 52%, #e0d5b4 52% 66.7%, #3d4036 66.7% 93.7%, #f3d99a 93.7% 100%); border: 2px solid #ddd7c6; }
+.clock .m { position: absolute; top: 0; width: 140px; margin-right: -70px; text-align: center; font-size: 18px; line-height: 1.15; }
+.clock .m b { display: block; font-size: 22px; color: #2e6a2a; }
+.clock .m::after { content: ""; display: block; width: 3px; height: 22px; background: #2e6a2a; margin: 4px auto 0; }
+.clock .lo { top: 104px; } .clock .lo::after { display: none; } .clock .lo::before { content: ""; display: block; width: 3px; height: 14px; background: #7a5a1c; margin: 0 auto 4px; }
+.rules { counter-reset: r; margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.rules li { background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 12px 16px; font-size: 22px; line-height: 1.35; display: flex; gap: 14px; align-items: flex-start; }
+.rules li::before { counter-increment: r; content: counter(r); flex: none; width: 40px; height: 40px; border-radius: 50%; background: #b5541c; color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+.foot { background: #e9e4d6; padding: 16px 44px; font-size: 19px; color: #3d4036; margin-top: 20px; }
+.kapbox { display: flex; gap: 12px; align-items: stretch; }
+.kapbox .cyc { flex: 1.2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.kapbox .cyc div { height: 90px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; text-align: center; line-height: 1.1; }
+.kapbox .txt { flex: 1; background: #fffdf8; border: 2px solid #ddd7c6; border-radius: 12px; padding: 12px 16px; font-size: 20px; line-height: 1.35; }
+</style></head><body>
+<div class="poster" id="shot" style="padding-bottom:20px">  <div class="band" style="padding:16px 44px"><h1 style="font-size:34px">מנגנון השיבוץ הפלוגתי</h1><p style="font-size:19px">משימות עוברות בין צוותים כחבילות שלמות · 48 שעות לבלוק · מחזור של 6 ימים וחוזר</p></div>
+
+  <div class="sec">
+    <h2><span>3</span>הצוות בפנים: 3 תאים, ומחזור אישי של 12 ימים</h2>
+    <div class="cells">
+      <div class="cell"><b>תא α · מפקד + 2</b>בלוק קשה: סיור יום<br>בלוק קל: כרמל</div>
+      <div class="cell"><b>תא β · מפקד + 2</b>בלוק קשה: סיור לילה<br>בלוק קל: טיגריס</div>
+      <div class="cell"><b>תא γ · 3 לוחמים</b>בלוק קשה: עמדה ביום<br>בלוק קל: מתפצל 2 + 1</div>
+    </div>
+    <p class="lead">כל לוחם זוכר שורה אחת. ההיפוך בין יום ללילה קורה דרך הבלוק הקל, בלי שאף אחד יעשה 24 שעות ברצף:</p>
+    <div class="strip">
+      <div class="d">סיור<br>יום</div><div class="d">סיור<br>יום</div><div class="d">סיור<br>יום</div><div class="d">סיור<br>יום</div>
+      <div class="t">כרמל</div><div class="t">טיגריס</div>
+      <div class="n">סיור<br>לילה</div><div class="n">סיור<br>לילה</div><div class="n">סיור<br>לילה</div><div class="n">סיור<br>לילה</div>
+      <div class="t">טיגריס</div><div class="t">כרמל</div>
+    </div>
+  </div>
+</div></body></html>
